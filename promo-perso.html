@@ -199,8 +199,8 @@
 "use strict";
 const $=s=>document.querySelector(s);
 const IN_FRAME=(()=>{try{return window.self!==window.top;}catch(e){return true;}})();
-const PROG={pfco:'PFCO',cfid:'Challenge FID'};
-const STEPS=[['Ciblés','Ciblé','s1'],['Exposés/Inscrits','Exposés','s2'],['Activés/ Joueurs','Activés','s3'],['Utilisés / Gagnants','Utilisés','s4']];
+const PROG={pfco:'PFCO',cfid:'CFID'};
+const STEPS=[['CIBLE','Ciblé','s1'],['EXPOSE','Exposés','s2'],['ACTIVE','Activés','s3'],['UTILISE','Utilisés','s4']];
 const RATES=['Taux exposition →','Taux activation →','Taux utilisation →'];
 const MOIS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 const MEAS=['budget','budgetn1','capromo','capromon1','caitot','caitotn1','generosite','generositen1','nbfoyers','nbfoyersn1','nbusers','nbusersn1','nbfoyersfunnel','nbfoyersfunneln1','volume','volumen1','roi','roin1','couponsperuser','couponsperusern1'];
@@ -224,7 +224,8 @@ function evolHtml(e,cls){if(e===null)return `<div class="${cls} flat">—</div>`
 const pct=v=>v==null||!isFinite(v)?'—':Math.round(v*100)+'%';
 
 /* ---------- données Tableau ---------- */
-function norm(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'').replace(/^(sum|somme|agg|attr)/,'');}
+function normv(s){return String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');}
+function norm(s){return normv(s).replace(/^(sum|somme|agg|attr)/,'');}
 async function loadTableau(){
   if(window.__noTableau||!window.tableau||!tableau.extensions) throw new Error('API Extensions Tableau indisponible');
   await Promise.race([tableau.extensions.initializeAsync(),new Promise((_,r)=>setTimeout(()=>r(new Error("Tableau n'a pas répondu")),IN_FRAME?90000:4000))]);
@@ -300,12 +301,25 @@ function fillFilters(){
 }
 
 /* ---------- agrégats ---------- */
+/* valeurs brutes OU alias de la source : CFID = « Challenge FID », CIBLE = « Ciblés »… */
+function canonProg(v){const n=normv(v);return n==='challengefid'||n==='cfid'?'cfid':n;}
+function canonStep(v){const n=normv(v);if(n.startsWith('cibl'))return 'cible';if(n.startsWith('expos'))return 'expose';if(n.startsWith('activ'))return 'active';if(n.startsWith('utilis'))return 'utilise';return n;}
+function keyed(r){if(!r._k)r._k={program:canonProg(r.program),temporalite:normv(r.temporalite),periode:normv(r.periode),type:normv(r.typemarque),enseigne:normv(r.enseigne),etape:canonStep(r.etapefunnel),flag:normv(r.flagrealisecadre)};return r._k;}
 function pick(prog,etape,{type=state.type,flag=null}={}){
   const [t,p]=state.periode.split('|');
+  const q={program:canonProg(prog),temporalite:normv(t),periode:normv(p),enseigne:normv(state.enseigne),etape:canonStep(etape),type:type?normv(type):null,flag:flag?normv(flag):null};
   const acc=Object.fromEntries(MEAS.map(m=>[m,0]));let n=0;
-  for(const r of ROWS){if(r.program!==prog||r.temporalite!==t||r.periode!==p||r.enseigne!==state.enseigne||r.etapefunnel!==etape)continue;
-    if(type&&r.typemarque!==type)continue;if(flag&&r.flagrealisecadre!==flag)continue;n++;MEAS.forEach(m=>acc[m]+=r[m]);}
+  for(const r of ROWS){const k=keyed(r);if(k.program!==q.program||k.temporalite!==q.temporalite||k.periode!==q.periode||k.enseigne!==q.enseigne||k.etape!==q.etape)continue;
+    if(q.type&&k.type!==q.type)continue;if(q.flag&&k.flag!==q.flag)continue;n++;MEAS.forEach(m=>acc[m]+=r[m]);}
   acc._n=n;return acc;
+}
+function diag(){
+  const progs=new Set(ROWS.map(r=>keyed(r).program));const steps=new Set(ROWS.map(r=>keyed(r).etape));
+  const need=['pfco','cfid'],needS=STEPS.map(s=>canonStep(s[0])).concat(['kpi','budget']);
+  const miss=[...need.filter(x=>!progs.has(x)),...needS.filter(x=>!steps.has(x))];
+  if(!miss.length) return '';
+  const uniq=f=>[...new Set(ROWS.map(f))].map(v=>JSON.stringify(v)).join(', ');
+  return `<div style="margin-top:12px;font-size:10px;color:#999;">Diagnostic : ${ROWS.length} lignes reçues · valeurs manquantes ${miss.join(', ')} · programmes reçus [${uniq(r=>r.program)}] · étapes reçues [${uniq(r=>r.etapefunnel)}]</div>`;
 }
 
 /* ---------- rendu ---------- */
@@ -370,7 +384,7 @@ function render(){
   $('#meta').textContent=`${state.type} · ${state.enseigne}`;
   $('#content').innerHTML=`${BANNER}<div class="section-title">Écoulement budgets vs Cadré — ${perTxt}</div>
     <div class="ecoulement-section">${ecoCard('pfco')}${ecoCard('cfid')}</div>
-    <div class="kpi-section">${kpiCard('pfco',perTxt)}${kpiCard('cfid',perTxt)}</div>${funnel(perTxt)}`;
+    <div class="kpi-section">${kpiCard('pfco',perTxt)}${kpiCard('cfid',perTxt)}</div>${funnel(perTxt)}${diag()}`;
 }
 loadTableau().then(r=>{if(!r.length)throw new Error('La feuille Data ne renvoie aucune ligne');ROWS=r;render();}).catch(err=>{
   BANNER=IN_FRAME&&!window.__noTableau?`<div class="banner err">Lecture des données Tableau impossible : ${String(err&&err.message||err).replace(/</g,'&lt;')}. Aperçu sur données de démonstration.</div>`:'<div class="banner demo">Aperçu sur des données de démonstration. Dans le dashboard Tableau, la page lit la source data_pp_synthese.</div>';
