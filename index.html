@@ -136,9 +136,19 @@ async function loadTableau(){
   const dash=tableau.extensions.dashboardContent.dashboard;
   const ws=dash.worksheets.find(w=>/^data/i.test(w.name))||dash.worksheets[0];
   if(!ws) throw new Error('Aucune feuille dans le dashboard');
-  const tables=await ws.getUnderlyingTablesAsync();
-  const t=tables.find(x=>/order/i.test(x.caption||x.id))||tables[0];
-  const reader=await ws.getUnderlyingTableDataReaderAsync(t.id,10000,{ignoreAliases:false,includeAllColumns:true});
+  // 1) tables sous-jacentes de la feuille ; 2) sinon tables logiques de la source de données
+  let reader=null;
+  try{const tables=await ws.getUnderlyingTablesAsync();const t=tables.find(x=>/order/i.test(x.caption||x.id))||tables[0];
+    if(t) reader=await ws.getUnderlyingTableDataReaderAsync(t.id,10000,{ignoreAliases:false,includeAllColumns:true});}catch(e){reader=null;}
+  if(!reader){
+    const dss=await ws.getDataSourcesAsync();
+    const ds=dss.find(d=>/superstore/i.test(d.name))||dss[0];
+    if(!ds) throw new Error('Aucune source de données sur la feuille '+ws.name);
+    const lts=await ds.getLogicalTablesAsync();
+    const lt=lts.find(x=>/order/i.test(x.caption||x.id))||lts[0];
+    if(!lt) throw new Error('Aucune table logique dans la source '+ds.name);
+    reader=await ds.getLogicalTableDataReaderAsync(lt.id,10000,{ignoreAliases:false});
+  }
   const out=[];
   try{
     for(let p=0;p<reader.pageCount;p++){
