@@ -128,10 +128,11 @@ const state={region:'Tous',segment:'Tous',category:'Tous',sub:null,st:null};
 const charts={};
 
 /* ---------- data: Tableau (live) ---------- */
+const IN_FRAME=(()=>{try{return window.self!==window.top;}catch(e){return true;}})();
 function norm(s){return String(s||'').toLowerCase().replace(/[^a-z]/g,'');}
 async function loadTableau(){
   if(window.__noTableau||!window.tableau||!tableau.extensions) throw new Error('no tableau');
-  await Promise.race([tableau.extensions.initializeAsync(),new Promise((_,r)=>setTimeout(()=>r(new Error('timeout')),4000))]);
+  await Promise.race([tableau.extensions.initializeAsync(),new Promise((_,r)=>setTimeout(()=>r(new Error("Tableau n'a pas répondu à l'initialisation de l'extension")),IN_FRAME?90000:4000))]);
   const dash=tableau.extensions.dashboardContent.dashboard;
   const ws=dash.worksheets.find(w=>/^data/i.test(w.name))||dash.worksheets[0];
   if(!ws) throw new Error('Aucune feuille dans le dashboard');
@@ -325,6 +326,10 @@ window.addEventListener('resize',()=>Object.values(charts).forEach(c=>c.resize()
 try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>ROWS.length&&render());}catch(e){}
 new MutationObserver(()=>ROWS.length&&render()).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 
-loadTableau().then(r=>{ROWS=r;boot(true);}).catch(()=>{ROWS=demoRows();$('#demo').hidden=false;boot(true);});
+if(IN_FRAME) $('#app').textContent="Connexion aux données Tableau… Si une fenêtre demande l'accès aux données complètes, cliquez sur Autoriser.";
+loadTableau().then(r=>{if(!r.length) throw new Error('La feuille Data ne renvoie aucune ligne');ROWS=r;boot(true);}).catch(err=>{
+  if(IN_FRAME&&!window.__noTableau){const b=$('#demo');b.hidden=false;b.style.background='var(--bad-bg)';b.style.color='var(--bad)';b.textContent='Lecture des données Tableau impossible : '+(err&&err.message||err)+'. Aperçu affiché sur des données de démonstration.';}
+  else $('#demo').hidden=false;
+  ROWS=demoRows();boot(true);});
 })();
 </script>
