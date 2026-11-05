@@ -170,28 +170,68 @@
 .kpi-item.roi .kpi-value .u { font-size: 18px; }
 .eco-delta.down { color: var(--red); }
 .na { color: #bbb; }
-@media (max-width: 1100px) { .content { padding: 16px; } .ecoulement-section, .kpi-section { grid-template-columns: 1fr; } }
+/* En-tête avec logo */
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-logo { height: 34px; width: auto; display: block; }
+.brand-sep { width: 1px; height: 30px; background: #e5e5e5; }
+/* Filtres façon filtres rapides Tableau */
+.fbar { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: flex-end; }
+.flt { display: flex; flex-direction: column; gap: 4px; min-width: 160px; }
+.flt label { font-size: 12px; color: #333; font-weight: 500; }
+.flt select { height: 26px; min-width: 160px; max-width: 230px; border: 1px solid #c9c9c9; border-radius: 2px; padding: 0 26px 0 8px; font-size: 11.5px; color: #222; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0h10L5 6z' fill='%23555'/%3E%3C/svg%3E") no-repeat right 8px center; -webkit-appearance: none; appearance: none; cursor: pointer; }
+.flt select:hover { border-color: #999; }
+.flt select:focus { outline: 2px solid var(--blue-light); outline-offset: 1px; }
+.flt.busy select { opacity: .55; }
+/* Lecture de la performance */
+.reading { background: var(--blue-bg); border: 1px solid #d3e2f1; border-radius: 10px; padding: 14px 20px 16px; margin-bottom: 20px; }
+.reading-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.reading-title { font-size: 13px; font-weight: 700; color: var(--blue); }
+.reading-scope { font-size: 10.5px; color: #6b7b8c; }
+.reading-lead { font-size: 12.5px; color: #1a1a1a; margin-bottom: 10px; }
+.reading-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.reading-col ul { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+.reading-col li { font-size: 12px; color: #333; line-height: 1.45; padding-left: 12px; position: relative; }
+.reading-col li::before { content: ""; position: absolute; left: 0; top: 7px; width: 5px; height: 5px; border-radius: 50%; background: var(--blue-light); }
+.reading b { color: #111; }
+.reading .pos { color: var(--green); font-weight: 600; }
+.reading .neg { color: var(--red); font-weight: 600; }
+/* Infobulles */
+[data-tip] { cursor: help; }
+#tip { position: fixed; z-index: 50; max-width: 300px; background: #fff; border: 1px solid #dcdcdc; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.14); padding: 10px 12px; font-size: 11.5px; color: #333; line-height: 1.45; pointer-events: none; opacity: 0; transition: opacity .12s; }
+#tip.on { opacity: 1; }
+#tip .t-title { font-weight: 700; color: var(--blue); font-size: 12px; margin-bottom: 4px; }
+#tip .t-val { font-weight: 700; color: #111; }
+#tip .t-row { display: flex; justify-content: space-between; gap: 14px; }
+#tip .t-note { color: #888; font-size: 10.5px; margin-top: 6px; border-top: 1px solid #f0f0f0; padding-top: 5px; }
+#tip .up { color: var(--green); font-weight: 600; } #tip .down { color: var(--red); font-weight: 600; }
+.empty { padding: 40px 24px; text-align: center; color: #777; font-size: 13px; background: #fafafa; border: 1px dashed #ddd; border-radius: 10px; margin-bottom: 20px; }
+#content.loading { opacity: .5; transition: opacity .15s; }
+@media (max-width: 1100px) { .content { padding: 16px; } .ecoulement-section, .kpi-section, .reading-cols { grid-template-columns: 1fr; } .header { flex-wrap: wrap; gap: 12px; } }
 </style>
 </head>
 <body>
 <div class="dashboard">
   <div class="header">
-    <div>
-      <h1>Dashboard Promo Perso</h1>
-      <div class="header-sub">ROI campagnes &amp; performance coupons fournisseurs</div>
-    </div>
-    <div class="header-right">
-      <div class="filters">
-        <select id="f-periode" aria-label="Période"></select>
-        <select id="f-type" aria-label="Type de marque"></select>
-        <select id="f-enseigne" aria-label="Enseigne"></select>
+    <div class="brand">
+      <img class="brand-logo" id="logo" src="carrefour-logo.svg" alt="Carrefour" onerror="if(!this.dataset.f){this.dataset.f='1';this.src='carrefour-logo.png';}else{this.style.display='none';var s=document.getElementById('logo-sep');if(s)s.style.display='none';}">
+      <div class="brand-sep" id="logo-sep"></div>
+      <div>
+        <h1>Dashboard Promo Perso</h1>
+        <div class="header-sub">ROI campagnes &amp; performance coupons fournisseurs</div>
       </div>
-      <div class="header-meta" id="meta"></div>
+    </div>
+    <div class="fbar" id="fbar">
+      <div class="flt"><label for="f-periode">Période</label><select id="f-periode"></select></div>
+      <div class="flt"><label for="f-enseigne">Enseigne</label><select id="f-enseigne"></select></div>
+      <div class="flt" id="w-marche"><label for="f-marche">Marché</label><select id="f-marche"><option>Total</option></select></div>
+      <div class="flt" id="w-fournisseur"><label for="f-fournisseur">Fournisseur</label><select id="f-fournisseur"><option>Total</option></select></div>
+      <div class="flt"><label for="f-type">Type de marque</label><select id="f-type"></select></div>
     </div>
   </div>
   <div class="tabs"><button class="tab active" type="button">Vue Synthèse</button></div>
   <div class="content" id="content"><div class="state">Chargement des données Tableau…</div></div>
 </div>
+<div id="tip" role="tooltip"></div>
 
 <script src="tableau.extensions.1.latest.min.js" onerror="window.__noTableau=true"></script>
 <script>
@@ -201,16 +241,21 @@ const $=s=>document.querySelector(s);
 const IN_FRAME=(()=>{try{return window.self!==window.top;}catch(e){return true;}})();
 const PROG={pfco:'PFCO',cfid:'CFID'};
 const STEPS=[['CIBLE','Ciblé','s1'],['EXPOSE','Exposés','s2'],['ACTIVE','Activés','s3'],['UTILISE','Utilisés','s4']];
-const RATES=['Taux exposition →','Taux activation →','Taux utilisation →'];
+const RATES=[['Taux exposition →','Taux d\'exposition','Exposés ÷ Ciblés'],['Taux activation →','Taux d\'activation','Activés ÷ Exposés'],['Taux utilisation →','Taux d\'utilisation','Utilisés ÷ Activés']];
 const MOIS=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
 const MEAS=['budget','budgetn1','capromo','capromon1','caitot','caitotn1','generosite','generositen1','nbfoyers','nbfoyersn1','nbusers','nbusersn1','nbfoyersfunnel','nbfoyersfunneln1','volume','volumen1','roi','roin1','couponsperuser','couponsperusern1'];
 const DIMS=['program','temporalite','periode','typemarque','enseigne','etapefunnel','flagrealisecadre'];
-let ROWS=[];
-const state={periode:null,type:'MN + MDC',enseigne:'Tous formats'};
+const NAME={pfco:'PFCO',cfid:'C.FID'};
+const STEP_DEF={
+  pfco:['Foyers sélectionnés par l\'algorithme de ciblage.','Foyers ayant vu l\'offre de coupons.','Foyers ayant activé au moins un coupon.','Foyers ayant utilisé au moins un coupon en caisse.'],
+  cfid:['Foyers sélectionnés par l\'algorithme de ciblage.','Foyers inscrits au challenge.','Foyers ayant joué (challenge activé).','Foyers ayant gagné au moins un challenge.']};
+let ROWS=[],WS=null,LIVE=false;
+const state={periode:null,type:'MN + MDC',enseigne:'Tous formats',marche:'Total',fournisseur:'Total'};
+const DOMAIN={marche:['Total'],fournisseur:['Total']};
 
-/* ---------- formats (style maquette) ---------- */
+/* ---------- formats ---------- */
 const num=(v,d=1)=>(Math.round(v*Math.pow(10,d))/Math.pow(10,d)).toFixed(d);
-function short(v){ // -> [nombre, unité]
+function short(v){
   if(v==null||!isFinite(v)) return ['—',''];
   const a=Math.abs(v);
   if(a>=1e9) return [num(v/1e9),'Md'];
@@ -219,19 +264,38 @@ function short(v){ // -> [nombre, unité]
   return [num(v,a<10?1:0),''];
 }
 const txt=(v,suf='')=>{const [n,u]=short(v);return n+u+suf;};
+const eur=v=>{const [n,u]=short(v);return n==='—'?'—':`${n} ${u}€`;};
+const cnt=v=>{const [n,u]=short(v);return n==='—'?'—':`${n} ${u}`.trim();};
 function evol(cur,prev){if(!prev||!isFinite(cur)||!isFinite(prev))return null;return cur/prev-1;}
+const sgn=e=>e===null?'—':`${e>=0?'+':'−'}${Math.abs(Math.round(e*100))} %`;
+const evSpan=e=>e===null?'<span>—</span>':`<span class="${e>=0?'up':'down'}">${sgn(e)}</span>`;
 function evolHtml(e,cls){if(e===null)return `<div class="${cls} flat">—</div>`;const up=e>=0;return `<div class="${cls} ${up?'up':'down'}">${up?'+':''}${Math.round(e*100)}%</div>`;}
 const pct=v=>v==null||!isFinite(v)?'—':Math.round(v*100)+'%';
+const pctS=v=>v==null||!isFinite(v)?'—':Math.round(v*100)+' %';
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+/* ---------- infobulles ---------- */
+function tip(title,rows,note){
+  const r=(rows||[]).map(x=>Array.isArray(x)?`<div class="t-row"><span>${x[0]}</span><span class="t-val">${x[1]}</span></div>`:`<div>${x}</div>`).join('');
+  return ` data-tip="${esc(`<div class="t-title">${title}</div>${r}${note?`<div class="t-note">${note}</div>`:''}`)}"`;
+}
+(function(){
+  const el=$('#tip');let cur=null;
+  const place=e=>{const pad=14,w=el.offsetWidth,h=el.offsetHeight;let x=e.clientX+pad,y=e.clientY+pad;
+    if(x+w>window.innerWidth-8)x=e.clientX-w-pad;if(y+h>window.innerHeight-8)y=e.clientY-h-pad;el.style.left=Math.max(8,x)+'px';el.style.top=Math.max(8,y)+'px';};
+  document.addEventListener('mouseover',e=>{const t=e.target.closest('[data-tip]');if(t===cur)return;cur=t;if(!t){el.classList.remove('on');return;}el.innerHTML=t.getAttribute('data-tip');el.classList.add('on');place(e);});
+  document.addEventListener('mousemove',e=>{if(cur)place(e);});
+  document.addEventListener('mouseleave',()=>{cur=null;el.classList.remove('on');});
+  document.addEventListener('scroll',()=>{cur=null;el.classList.remove('on');},true);
+})();
+
+/* ---------- logo ---------- */
+
 
 /* ---------- données Tableau ---------- */
-function normv(s){return String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');}
+function normv(s){return String(s==null?'':s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');}
 function norm(s){return normv(s).replace(/^(sum|somme|agg|attr)/,'');}
-async function loadTableau(){
-  if(window.__noTableau||!window.tableau||!tableau.extensions) throw new Error('API Extensions Tableau indisponible');
-  await Promise.race([tableau.extensions.initializeAsync(),new Promise((_,r)=>setTimeout(()=>r(new Error("Tableau n'a pas répondu")),IN_FRAME?90000:4000))]);
-  const dash=tableau.extensions.dashboardContent.dashboard;
-  const ws=dash.worksheets.find(w=>/^data/i.test(w.name))||dash.worksheets[0];
-  if(!ws) throw new Error('Aucune feuille dans le dashboard');
+async function readData(ws){
   const pages=[];
   if(ws.getSummaryDataReaderAsync){
     const reader=await ws.getSummaryDataReaderAsync(10000,{ignoreSelection:true});
@@ -249,28 +313,69 @@ async function loadTableau(){
       out.push(o);
     }
   }
-  ws.addEventListener(tableau.TableauEventType.FilterChanged,()=>loadTableau().then(r=>{ROWS=r;render();}).catch(()=>{}));
   return out;
+}
+async function tableauFilter(key){
+  const fs=await WS.getFiltersAsync();
+  return fs.find(f=>normv(f.fieldName)===key)||null;
+}
+async function loadDomains(){
+  for(const key of ['marche','fournisseur']){
+    try{
+      const f=await tableauFilter(key);if(!f){$('#w-'+key).hidden=true;continue;}
+      const cur=(f.appliedValues||[]).map(v=>String(v.value));if(cur.length===1)state[key]=cur[0];
+      let vals=[];
+      if(f.getDomainAsync){const d=await f.getDomainAsync(tableau.FilterDomainType.Database);vals=d.values.map(v=>String(v.value));}
+      if(!vals.length)vals=cur;
+      DOMAIN[key]=sortTotalFirst([...new Set(vals)]);
+    }catch(e){$('#w-'+key).hidden=true;}
+  }
+}
+let reloadTimer=null,applying=false;
+function scheduleReload(){clearTimeout(reloadTimer);reloadTimer=setTimeout(async()=>{
+  $('#content').classList.add('loading');
+  try{ROWS=await readData(WS);render();}catch(e){}finally{$('#content').classList.remove('loading');}
+},250);}
+async function applyServerFilter(key,value){
+  state[key]=value;
+  if(!LIVE){render();return;}
+  const w=$('#w-'+key);w.classList.add('busy');applying=true;
+  try{const f=await tableauFilter(key);if(f)await WS.applyFilterAsync(f.fieldName,[value],tableau.FilterUpdateType.Replace);}
+  catch(e){alertBanner('Filtre '+key+' non appliqué : '+(e&&e.message||e));}
+  finally{applying=false;w.classList.remove('busy');scheduleReload();}
+}
+async function initTableau(){
+  if(window.__noTableau||!window.tableau||!tableau.extensions) throw new Error('API Extensions Tableau indisponible');
+  await Promise.race([tableau.extensions.initializeAsync(),new Promise((_,r)=>setTimeout(()=>r(new Error("Tableau n'a pas répondu")),IN_FRAME?90000:4000))]);
+  const dash=tableau.extensions.dashboardContent.dashboard;
+  WS=dash.worksheets.find(w=>/^data/i.test(w.name))||dash.worksheets[0];
+  if(!WS) throw new Error('Aucune feuille dans le dashboard');
+  await loadDomains();
+  const rows=await readData(WS);
+  WS.addEventListener(tableau.TableauEventType.FilterChanged,()=>{if(!applying)scheduleReload();});
+  LIVE=true;
+  return rows;
 }
 
 /* ---------- données de démo (aperçu hors Tableau) ---------- */
 function demoRows(){
-  let seed=7;const rnd=()=>(seed=(seed*1664525+1013904223)%4294967296)/4294967296;
+  let seed=7+normv(state.marche).length*13+normv(state.fournisseur).length*7;const rnd=()=>(seed=(seed*1664525+1013904223)%4294967296)/4294967296;
+  const scope=(state.marche==='Total'?1:.12)*(state.fournisseur==='Total'?1:.04);
   const out=[];const pers=[['CAD','CAD-M10-2026'],['Mois','M10-2026'],['Campagne','Octobre Campagne 1']];
-  for(const [prog,f] of [['PFCO',1],['Challenge FID',.3]]) for(const [tmp,per] of pers) for(const ens of ['Tous formats','HM','SM','PROXI']) for(const tm of ['MN + MDC','MN','MDC']){
-    const k=(tm==='MN + MDC'?1:tm==='MN'?.58:.42)*(ens==='Tous formats'?1:.3)*(tmp==='CAD'?1:.12)*f;
+  for(const [prog,f] of [['PFCO',1],['CFID',.3]]) for(const [tmp,per] of pers) for(const ens of ['Tous formats','HM','SM','PROXI']) for(const tm of ['MN + MDC','MN','MDC']){
+    const k=(tm==='MN + MDC'?1:tm==='MN'?.58:.42)*(ens==='Tous formats'?1:.3)*(tmp==='CAD'?1:.12)*f*scope;
     const base={program:prog,temporalite:tmp,periode:per,typemarque:tm,enseigne:ens};const z=()=>Object.fromEntries(MEAS.map(m=>[m,0]));
-    const cad=3e6*k*(.9+rnd()*.2),rea=cad*(1+rnd()*.25);
+    const cad=3e6*k*(.9+rnd()*.2),rea=cad*(.7+rnd()*.5);
     out.push({...base,etapefunnel:'BUDGET',flagrealisecadre:'CADRE',...z(),budget:cad,budgetn1:cad*.85});
     out.push({...base,etapefunnel:'BUDGET',flagrealisecadre:'REALISE',...z(),budget:rea,budgetn1:rea*.8});
-    const fo=4.2e6*k,us=fo*.23;
-    out.push({...base,etapefunnel:'KPI',flagrealisecadre:'FALSE',...z(),nbfoyers:fo,nbfoyersn1:fo/1.18,nbusers:us,nbusersn1:us/1.32,couponsperuser:3.4,couponsperusern1:3.0,generosite:rea,generositen1:rea/1.44,capromo:rea*9,capromon1:rea*9/1.38,caitot:rea*2.3,caitotn1:rea*2.3/1.41,roi:9.0,roin1:8.7});
-    let c=4.2e6*k,v=5.9e6*k;for(const [st] of STEPS){out.push({...base,etapefunnel:st,flagrealisecadre:'FALSE',...z(),nbfoyersfunnel:c,nbfoyersfunneln1:c/1.2,volume:v,volumen1:v/1.18});c*=.55+rnd()*.3;v*=.6+rnd()*.3;}
+    const fo=4.2e6*k,us=fo*.23,gen=rea,cai=gen*(5+rnd()*4);
+    out.push({...base,etapefunnel:'KPI',flagrealisecadre:'FALSE',...z(),nbfoyers:fo,nbfoyersn1:fo/1.18,nbusers:us,nbusersn1:us/1.32,couponsperuser:3.4,couponsperusern1:3.0,generosite:gen,generositen1:gen/1.44,capromo:cai*2.4,capromon1:cai*2.4/1.38,caitot:cai,caitotn1:cai/1.41,roi:cai/gen,roin1:cai/gen/1.03});
+    let c=4.2e6*k,v=5.9e6*k;for(const [st] of STEPS){out.push({...base,etapefunnel:st,flagrealisecadre:'FALSE',...z(),nbfoyersfunnel:c,nbfoyersfunneln1:c/1.2,volume:v,volumen1:v/1.18});c*=.4+rnd()*.5;v*=.5+rnd()*.4;}
   }
   return out;
 }
 
-/* ---------- périodes ---------- */
+/* ---------- périodes & filtres ---------- */
 function perKey(p){
   let m=/^CAD-M(\d+)-(\d{4})/.exec(p);if(m)return [0,+m[2],+m[1],0];
   m=/^M(\d+)-(\d{4})/.exec(p);if(m)return [1,+m[2],+m[1],0];
@@ -279,7 +384,7 @@ function perKey(p){
 }
 const cmp=(a,b)=>{const x=perKey(a),y=perKey(b);for(let i=0;i<4;i++)if(x[i]!==y[i])return x[i]-y[i];return a.localeCompare(b);};
 function perLabel(p){let m=/^CAD-M(\d+)-(\d{4})/.exec(p);if(m)return `Cumul à fin ${MOIS[+m[1]-1]} ${m[2]}`;m=/^M(\d+)-(\d{4})/.exec(p);if(m)return `${MOIS[+m[1]-1][0].toUpperCase()+MOIS[+m[1]-1].slice(1)} ${m[2]}`;return p;}
-
+function sortTotalFirst(a){return a.sort((x,y)=>{const tx=/^(total|tous)/i.test(x),ty=/^(total|tous)/i.test(y);return tx!==ty?(tx?-1:1):x.localeCompare(y,'fr');});}
 function fillFilters(){
   const temps={CAD:'Cumul à date',Mois:'Mois',Campagne:'Campagne'};
   const byT={};ROWS.forEach(r=>{(byT[r.temporalite]=byT[r.temporalite]||new Set()).add(r.periode);});
@@ -287,21 +392,25 @@ function fillFilters(){
   for(const t of ['CAD','Mois','Campagne',...Object.keys(byT).filter(t=>!temps[t])]){if(!byT[t])continue;
     const og=document.createElement('optgroup');og.label=temps[t]||t;
     [...byT[t]].sort(cmp).reverse().forEach(p=>{const o=document.createElement('option');o.value=t+'|'+p;o.textContent=perLabel(p);og.appendChild(o);});sel.appendChild(og);}
-  if(!state.periode){const cad=byT.CAD?[...byT.CAD].sort(cmp).pop():null;state.periode=cad?'CAD|'+cad:sel.options[0]?.value;}
+  const opts=[...sel.options].map(o=>o.value);
+  if(!state.periode||!opts.includes(state.periode)){const cad=byT.CAD?[...byT.CAD].sort(cmp).pop():null;state.periode=cad?'CAD|'+cad:opts[0];}
   sel.value=state.periode;
-  const opt=(id,vals,cur)=>{const s=$(id);s.innerHTML=vals.map(v=>`<option${v===cur?' selected':''}>${v}</option>`).join('');};
+  const opt=(id,vals,cur)=>{$(id).innerHTML=vals.map(v=>`<option value="${esc(v)}"${v===cur?' selected':''}>${esc(v)}</option>`).join('');};
   const uniq=k=>[...new Set(ROWS.map(r=>r[k]))];
   const types=uniq('typemarque').sort((a,b)=>(a==='MN + MDC'?-1:b==='MN + MDC'?1:a.localeCompare(b)));
-  const ens=uniq('enseigne').sort((a,b)=>(a==='Tous formats'?-1:b==='Tous formats'?1:a.localeCompare(b)));
-  if(!types.includes(state.type))state.type=types[0];if(!ens.includes(state.enseigne))state.enseigne=ens[0];
+  const ens=sortTotalFirst(uniq('enseigne'));
+  if(types.length&&!types.includes(state.type))state.type=types[0];if(ens.length&&!ens.includes(state.enseigne))state.enseigne=ens[0];
   opt('#f-type',types,state.type);opt('#f-enseigne',ens,state.enseigne);
+  opt('#f-marche',DOMAIN.marche.includes(state.marche)?DOMAIN.marche:[state.marche,...DOMAIN.marche],state.marche);
+  opt('#f-fournisseur',DOMAIN.fournisseur.includes(state.fournisseur)?DOMAIN.fournisseur:[state.fournisseur,...DOMAIN.fournisseur],state.fournisseur);
   sel.onchange=e=>{state.periode=e.target.value;render();};
   $('#f-type').onchange=e=>{state.type=e.target.value;render();};
   $('#f-enseigne').onchange=e=>{state.enseigne=e.target.value;render();};
+  $('#f-marche').onchange=e=>{applyServerFilter('marche',e.target.value);if(!LIVE){ROWS=demoRows();render();}};
+  $('#f-fournisseur').onchange=e=>{applyServerFilter('fournisseur',e.target.value);if(!LIVE){ROWS=demoRows();render();}};
 }
 
 /* ---------- agrégats ---------- */
-/* valeurs brutes OU alias de la source : CFID = « Challenge FID », CIBLE = « Ciblés »… */
 function canonProg(v){const n=normv(v);return n==='challengefid'||n==='cfid'?'cfid':n;}
 function canonStep(v){const n=normv(v);if(n.startsWith('cibl'))return 'cible';if(n.startsWith('expos'))return 'expose';if(n.startsWith('activ'))return 'active';if(n.startsWith('utilis'))return 'utilise';return n;}
 function keyed(r){if(!r._k)r._k={program:canonProg(r.program),temporalite:normv(r.temporalite),periode:normv(r.periode),type:normv(r.typemarque),enseigne:normv(r.enseigne),etape:canonStep(r.etapefunnel),flag:normv(r.flagrealisecadre)};return r._k;}
@@ -313,81 +422,136 @@ function pick(prog,etape,{type=state.type,flag=null}={}){
     if(q.type&&k.type!==q.type)continue;if(q.flag&&k.flag!==q.flag)continue;n++;MEAS.forEach(m=>acc[m]+=r[m]);}
   acc._n=n;return acc;
 }
-function diag(){
-  const progs=new Set(ROWS.map(r=>keyed(r).program));const steps=new Set(ROWS.map(r=>keyed(r).etape));
-  const need=['pfco','cfid'],needS=STEPS.map(s=>canonStep(s[0])).concat(['kpi','budget']);
-  const miss=[...need.filter(x=>!progs.has(x)),...needS.filter(x=>!steps.has(x))];
-  if(!miss.length) return '';
-  const uniq=f=>[...new Set(ROWS.map(f))].map(v=>JSON.stringify(v)).join(', ');
-  return `<div style="margin-top:12px;font-size:10px;color:#999;">Diagnostic : ${ROWS.length} lignes reçues · valeurs manquantes ${miss.join(', ')} · programmes reçus [${uniq(r=>r.program)}] · étapes reçues [${uniq(r=>r.etapefunnel)}]</div>`;
-}
-
-/* ---------- rendu ---------- */
-function ecoCard(key){
+function budget(key){
   const prog=PROG[key];
   const grp=tm=>({c:pick(prog,'BUDGET',{type:tm,flag:'CADRE'}).budget,r:pick(prog,'BUDGET',{type:tm,flag:'REALISE'}).budget});
   const mn=grp('MN'),mdc=grp('MDC');let tot=grp(state.type);
   if(!tot.c&&!tot.r&&state.type==='MN + MDC')tot={c:mn.c+mdc.c,r:mn.r+mdc.r};
-  const rate=tot.c?tot.r/tot.c:null;
+  return {mn,mdc,tot,rate:tot.c?tot.r/tot.c:null};
+}
+function funnelData(key){return STEPS.map(([s])=>pick(PROG[key],s));}
+
+/* ---------- rendu ---------- */
+function ecoCard(key){
+  const B=budget(key);
   const bars=(lab,g)=>{const mx=Math.max(g.c,g.r)||1;const e=evol(g.r,g.c);
-    return `<div class="eco-bar-group"><div class="eco-bar-label">${lab}</div><div class="eco-bars-pair">
+    const t=tip(`${NAME[key]} · ${lab} — budget`,[['Cadré',eur(g.c)],['Réalisé',eur(g.r)],['Réalisé / cadré',pctS(g.c?g.r/g.c:null)]],
+      `Le pourcentage sous les barres est l'écart du réalisé par rapport au cadré (${sgn(e)}).${g.c?'':' Budget cadré non renseigné pour ce périmètre.'}`);
+    return `<div class="eco-bar-group"${t}><div class="eco-bar-label">${lab}</div><div class="eco-bars-pair">
       <div class="eco-bar cadre" style="height:${Math.max(8,g.c/mx*100).toFixed(0)}%;"><span>${num(g.c/1e6)}</span></div>
       <div class="eco-bar realise" style="height:${Math.max(8,g.r/mx*100).toFixed(0)}%;"><span>${num(g.r/1e6)}</span></div></div>
       <div class="eco-delta${e!==null&&e<0?' down':''}">${e===null?'—':(e>=0?'+':'')+Math.round(e*100)+'%'}</div></div>`;};
+  const rt=tip(`Taux d'écoulement ${NAME[key]}`,[['Réalisé',eur(B.tot.r)],['Cadré',eur(B.tot.c)],['Écoulement',pctS(B.rate)]],
+    B.tot.c?`Budget réalisé ÷ budget cadré, ${state.type}.`:'Budget cadré non renseigné dans la source : taux non calculable.');
   return `<div class="ecoulement-card ${key}"><div class="ecoulement-header"><div style="display:flex;align-items:center;">
-    <span class="device-tag ${key}">${key==='pfco'?'PFCO':'C.FID'}</span><span class="device-name">${key==='pfco'?'Mes Bons de Réduction':'Challenge Fidélité'}</span></div>
-    <div class="ecoulement-rate" title="Réalisé / Cadré">${pct(rate)}</div></div>
-    <div class="eco-bars">${bars('MN',mn)}${bars('MDC',mdc)}</div>
+    <span class="device-tag ${key}">${NAME[key]}</span><span class="device-name">${key==='pfco'?'Mes Bons de Réduction':'Challenge Fidélité'}</span></div>
+    <div class="ecoulement-rate"${rt}>${pct(B.rate)}</div></div>
+    <div class="eco-bars">${bars('MN',B.mn)}${bars('MDC',B.mdc)}</div>
     <div class="eco-legend"><span><span class="eco-dot" style="background:#B8D4E8;"></span>Cadré (M€)</span><span><span class="eco-dot" style="background:#004E9A;"></span>Réalisé (M€)</span></div></div>`;
 }
-function kpiItem(v,n1,label,suf){const [n,u]=short(v);return `<div class="kpi-item"><div class="kpi-value">${n}<span class="u">${u}${suf||''}</span></div><div class="kpi-label">${label}</div>${evolHtml(evol(v,n1),'kpi-delta')}</div>`;}
+function kpiItem(v,n1,label,suf,def,fmt){
+  const [n,u]=short(v);const f=fmt||(suf?eur:cnt);const e=evol(v,n1);
+  const t=tip(label,[['N',f(v)],['N-1',f(n1)],['Évolution',evSpan(e)]],def);
+  return `<div class="kpi-item"${t}><div class="kpi-value">${n}<span class="u">${u}${suf||''}</span></div><div class="kpi-label">${label}</div>${evolHtml(e,'kpi-delta')}</div>`;}
 function kpiCard(key,perTxt){
-  const prog=PROG[key];const k=pick(prog,'KPI');const pf=key==='pfco';
-  return `<div class="kpi-card"><div class="kpi-card-header"><span class="device-tag ${key}">${pf?'PFCO':'C.FID'}</span><span class="kpi-card-title">Indicateurs clés — ${perTxt} vs N-1</span></div>
+  const k=pick(PROG[key],'KPI');const pf=key==='pfco';
+  const one=v=>k._n?num(v):'—';
+  const roiT=tip(`ROI ${NAME[key]}`,[['CA additionnel',eur(k.caitot)],['Générosité',eur(k.generosite)],['ROI N',one(k.roi)+'x'],['ROI N-1',one(k.roin1)+'x'],['Évolution',evSpan(evol(k.roi,k.roin1))]],
+    `CA additionnel ÷ générosité : 1 € de remise génère ${one(k.roi)} € de CA additionnel.`);
+  const cpu=tip(pf?'Coupons par utilisateur':'Challenges par gagnant',[['N',one(k.couponsperuser)],['N-1',one(k.couponsperusern1)],['Évolution',evSpan(evol(k.couponsperuser,k.couponsperusern1))]],
+    pf?'Nombre moyen de coupons utilisés par foyer utilisateur.':'Nombre moyen de challenges gagnés par foyer gagnant.');
+  return `<div class="kpi-card"><div class="kpi-card-header"><span class="device-tag ${key}">${NAME[key]}</span><span class="kpi-card-title">Indicateurs clés — ${perTxt} vs N-1</span></div>
   <div class="kpi-grid">
-    <div class="kpi-item roi"><div class="kpi-value" style="font-size:36px;">${k._n?num(k.roi):'—'}<span class="u">x</span></div><div class="kpi-label" style="font-size:11px;margin-top:6px;">ROI</div><div style="margin-top:6px;">${evolHtml(evol(k.roi,k.roin1),'kpi-delta')}</div></div>
-    ${kpiItem(k.nbfoyers,k.nbfoyersn1,pf?'Foyers coupon':'Joueurs')}
-    ${kpiItem(k.nbusers,k.nbusersn1,pf?'Utilisateurs':'Gagnants')}
-    <div class="kpi-item"><div class="kpi-value">${k._n?num(k.couponsperuser):'—'}</div><div class="kpi-label">${pf?'Cpn / utilisateur':'Chall / gagnant'}</div>${evolHtml(evol(k.couponsperuser,k.couponsperusern1),'kpi-delta')}</div>
-    ${kpiItem(k.generosite,k.generositen1,'Générosité','€')}
-    ${kpiItem(k.capromo,k.capromon1,'CA Total','€')}
-    ${kpiItem(k.caitot,k.caitotn1,'CA Additionnel','€')}
+    <div class="kpi-item roi"${roiT}><div class="kpi-value" style="font-size:36px;">${one(k.roi)}<span class="u">x</span></div><div class="kpi-label" style="font-size:11px;margin-top:6px;">ROI</div><div style="margin-top:6px;">${evolHtml(evol(k.roi,k.roin1),'kpi-delta')}</div></div>
+    ${kpiItem(k.nbfoyers,k.nbfoyersn1,pf?'Foyers coupon':'Joueurs','',pf?'Foyers ayant reçu au moins un coupon (foyers ciblés).':'Foyers ayant joué au moins un challenge.')}
+    ${kpiItem(k.nbusers,k.nbusersn1,pf?'Utilisateurs':'Gagnants','',pf?'Foyers ayant utilisé au moins un coupon en caisse.':'Foyers ayant gagné au moins un challenge.')}
+    <div class="kpi-item"${cpu}><div class="kpi-value">${one(k.couponsperuser)}</div><div class="kpi-label">${pf?'Cpn / utilisateur':'Chall / gagnant'}</div>${evolHtml(evol(k.couponsperuser,k.couponsperusern1),'kpi-delta')}</div>
+    ${kpiItem(k.generosite,k.generositen1,'Générosité','€','Montant des remises accordées aux clients via le dispositif.')}
+    ${kpiItem(k.capromo,k.capromon1,'CA Total','€','Chiffre d\'affaires réalisé sur les produits en promotion via le dispositif.')}
+    ${kpiItem(k.caitot,k.caitotn1,'CA Additionnel','€','CA incrémental attribué au dispositif, au-delà des achats qui auraient eu lieu sans l\'offre.')}
   </div></div>`;
 }
-function mb(cur,prev,cPrev,cCur){const mx=Math.max(cur,prev)||1;const e=evol(cur,prev);
-  return `<div class="fg-cell"><div class="mb-wrap">
+function mb(cur,prev,cPrev,cCur,tipAttr){const mx=Math.max(cur,prev)||1;const e=evol(cur,prev);
+  return `<div class="fg-cell"${tipAttr}><div class="mb-wrap">
     <div class="mb-row"><div class="mb-track"><div class="mb-fill" style="width:${(prev/mx*100).toFixed(0)}%;background:${cPrev};"></div></div><span class="mb-val prev">${txt(prev)}</span></div>
     <div class="mb-row"><div class="mb-track"><div class="mb-fill" style="width:${(cur/mx*100).toFixed(0)}%;background:${cCur};"></div></div><span class="mb-val cur">${txt(cur)}</span></div>
     ${e===null?'':`<span class="mb-delta ${e>=0?'up':'down'}">${e>=0?'+':''}${Math.round(e*100)}%</span>`}</div></div>`;}
 function funnel(perTxt){
-  const P=STEPS.map(([s])=>pick(PROG.pfco,s)),C=STEPS.map(([s])=>pick(PROG.cfid,s));
+  const P=funnelData('pfco'),C=funnelData('cfid');
+  const cellTip=(key,i,what,cur,prev)=>tip(`${NAME[key]} · ${STEPS[i][1]} — ${what}`,[['N',cnt(cur)],['N-1',cnt(prev)],['Évolution',evSpan(evol(cur,prev))]],STEP_DEF[key][i]+(cur?'':' Aucune valeur dans la source pour ce périmètre.'));
   let h=`<div class="fg-hdr lbl"></div><div class="fg-hdr sep"></div><div class="fg-hdr pfco-h" style="grid-column:span 2;">PFCO — Mes Bons de Réduction</div><div class="fg-hdr sep"></div><div class="fg-hdr cfid-h" style="grid-column:span 2;">C.FID — Challenge Fidélité</div><div class="fg-hdr sep"></div><div class="fg-hdr evol-h">Évol. vs N-1</div>
   <div class="fg-sub lbl"></div><div class="fg-sub sep"></div><div class="fg-sub" style="color:var(--red);"># Clients</div><div class="fg-sub" style="color:var(--red);"># Coupons</div><div class="fg-sub sep"></div><div class="fg-sub" style="color:var(--cyan);"># Clients</div><div class="fg-sub" style="color:var(--cyan);"># Challenges</div><div class="fg-sub sep"></div><div class="fg-sub ev">Foyers PFCO</div>`;
-  STEPS.forEach(([s,lab,cls],i)=>{const p=P[i],c=C[i];
-    h+=`<div class="fg-cell lbl"><span class="step-pill ${cls}">${lab}</span></div><div class="fg-cell sep"></div>
-      ${mb(p.nbfoyersfunnel,p.nbfoyersfunneln1,'#B8D4E8','#004E9A')}${mb(p.volume,p.volumen1,'#B8D4E8','#004E9A')}<div class="fg-cell sep"></div>
-      ${mb(c.nbfoyersfunnel,c.nbfoyersfunneln1,'#B2EBF2','#00BCD4')}${mb(c.volume,c.volumen1,'#B2EBF2','#00BCD4')}<div class="fg-cell sep"></div>
-      <div class="fg-cell ev-v">${(()=>{const e=evol(p.nbfoyersfunnel,p.nbfoyersfunneln1);return e===null?'<span class="cell-delta flat">—</span>':`<span class="cell-delta ${e>=0?'up':'down'}">${e>=0?'+':''}${Math.round(e*100)}%</span>`;})()}</div>`;
-    if(i<STEPS.length-1){const n=i+1,r=(a,b)=>pct(b&&a?b/a:null);
-      h+=`<div class="rate-row-cell lbl">${RATES[i]}</div><div class="rate-row-cell sep"></div>
-        <div class="rate-row-cell val">${r(P[i].nbfoyersfunnel,P[n].nbfoyersfunnel)}</div><div class="rate-row-cell val">${r(P[i].volume,P[n].volume)}</div><div class="rate-row-cell sep"></div>
-        <div class="rate-row-cell val">${r(C[i].nbfoyersfunnel,C[n].nbfoyersfunnel)}</div><div class="rate-row-cell val">${r(C[i].volume,C[n].volume)}</div><div class="rate-row-cell sep"></div><div class="rate-row-cell"></div>`;}
+  STEPS.forEach(([s,lab,cls],i)=>{const p=P[i],c=C[i];const e=evol(p.nbfoyersfunnel,p.nbfoyersfunneln1);
+    const pill=tip(`Étape ${lab}`,[`<b>PFCO :</b> ${STEP_DEF.pfco[i]}`,`<b>C.FID :</b> ${STEP_DEF.cfid[i]}`]);
+    h+=`<div class="fg-cell lbl"><span class="step-pill ${cls}"${pill}>${lab}</span></div><div class="fg-cell sep"></div>
+      ${mb(p.nbfoyersfunnel,p.nbfoyersfunneln1,'#B8D4E8','#004E9A',cellTip('pfco',i,'foyers',p.nbfoyersfunnel,p.nbfoyersfunneln1))}${mb(p.volume,p.volumen1,'#B8D4E8','#004E9A',cellTip('pfco',i,'coupons',p.volume,p.volumen1))}<div class="fg-cell sep"></div>
+      ${mb(c.nbfoyersfunnel,c.nbfoyersfunneln1,'#B2EBF2','#00BCD4',cellTip('cfid',i,'foyers',c.nbfoyersfunnel,c.nbfoyersfunneln1))}${mb(c.volume,c.volumen1,'#B2EBF2','#00BCD4',cellTip('cfid',i,'challenges',c.volume,c.volumen1))}<div class="fg-cell sep"></div>
+      <div class="fg-cell ev-v"${tip(`Foyers PFCO · ${lab}`,[['N',cnt(p.nbfoyersfunnel)],['N-1',cnt(p.nbfoyersfunneln1)],['Évolution',evSpan(e)]])}>${e===null?'<span class="cell-delta flat">—</span>':`<span class="cell-delta ${e>=0?'up':'down'}">${e>=0?'+':''}${Math.round(e*100)}%</span>`}</div>`;
+    if(i<STEPS.length-1){const n=i+1;const [lbl,name,form]=RATES[i];
+      const rc=(key,A,B,field,unit)=>{const a=A[i][field],b=A[n][field];const v=a&&b?b/a:null;
+        return `<div class="rate-row-cell val"${tip(`${name} ${NAME[key]} (${unit})`,[[STEPS[n][1],cnt(b)],[STEPS[i][1],cnt(a)],['Taux',pctS(v)]],`${form}.`)}>${pct(v)}</div>`;};
+      h+=`<div class="rate-row-cell lbl">${lbl}</div><div class="rate-row-cell sep"></div>
+        ${rc('pfco',P,null,'nbfoyersfunnel','foyers')}${rc('pfco',P,null,'volume','coupons')}<div class="rate-row-cell sep"></div>
+        ${rc('cfid',C,null,'nbfoyersfunnel','foyers')}${rc('cfid',C,null,'volume','challenges')}<div class="rate-row-cell sep"></div><div class="rate-row-cell"></div>`;}
   });
   return `<div class="funnel-section"><div class="funnel-section-header"><div class="funnel-section-title">Funnel d'activation — ${perTxt} vs N-1</div><div style="font-size:10px;color:#aaa;">Valeur courante · réf. N-1 · évolution</div></div>
     <div class="funnel-content"><div class="funnel-grid">${h}</div></div>
     <div class="funnel-legend"><span><span class="leg-sq" style="background:#B8D4E8;"></span>PFCO N-1</span><span><span class="leg-sq" style="background:#004E9A;"></span>PFCO N</span><span><span class="leg-sq" style="background:#B2EBF2;"></span>C.FID N-1</span><span><span class="leg-sq" style="background:#00BCD4;"></span>C.FID N</span><span><span class="leg-sq" style="background:var(--green-bg);"></span>Évol. N/N-1</span></div></div>`;
 }
+
+/* ---------- lecture de la performance ---------- */
+const ev=e=>e===null?'':`<span class="${e>=0?'pos':'neg'}">${sgn(e)}</span>`;
+function lectureProg(key){
+  const pf=key==='pfco';const B=budget(key);const k=pick(PROG[key],'KPI');const F=funnelData(key);const out=[];
+  if(B.tot.c>0&&B.tot.r>0){
+    const r=B.rate;const qual=r>=1.05?'au-delà du cadré':r>=0.95?'en ligne avec le cadré':r>=0.8?'légèrement en retrait du cadré':'nettement en retrait du cadré';
+    out.push(`<b>Budget</b> : ${eur(B.tot.r)} réalisés sur ${eur(B.tot.c)} cadrés, soit <b>${pctS(r)}</b> d'écoulement, ${qual}.`);
+  } else if(B.tot.r>0) out.push(`<b>Budget</b> : ${eur(B.tot.r)} réalisés ; budget cadré non renseigné, écoulement non calculable.`);
+  if(k._n&&k.roi){
+    const eg=evol(k.generosite,k.generositen1),ec=evol(k.caitot,k.caitotn1);
+    let drv='';if(eg!==null&&ec!==null)drv=ec>=eg?` Le CA additionnel (${ev(ec)}) progresse plus vite que la générosité (${ev(eg)}).`:` La générosité (${ev(eg)}) progresse plus vite que le CA additionnel (${ev(ec)}), ce qui pèse sur le ROI.`;
+    out.push(`<b>Rentabilité</b> : ROI de <b>${num(k.roi)}x</b> ${ev(evol(k.roi,k.roin1))} vs N-1 : 1 € de remise génère ${num(k.roi)} € de CA additionnel (${eur(k.caitot)}).${drv}`);
+  }
+  const rates=[];for(let i=0;i<STEPS.length-1;i++){const a=F[i].nbfoyersfunnel,b=F[i+1].nbfoyersfunnel;if(a&&b)rates.push([i,b/a]);}
+  const aud=pf?`${cnt(k.nbusers)} utilisateurs ${ev(evol(k.nbusers,k.nbusersn1))}`:`${cnt(k.nbusers)} gagnants ${ev(evol(k.nbusers,k.nbusersn1))}`;
+  if(rates.length){const w=rates.reduce((a,b)=>b[1]<a[1]?b:a);
+    out.push(`<b>Parcours</b> : ${k._n?aud+'. ':''}Principale déperdition entre <b>${STEPS[w[0]][1]} et ${STEPS[w[0]+1][1]}</b> (${pctS(w[1])} de passage).`);
+  } else if(k._n) out.push(`<b>Parcours</b> : ${aud}.`);
+  if(!out.length) out.push('Aucune donnée pour ce périmètre.');
+  return `<div class="reading-col"><span class="device-tag ${key}">${NAME[key]}</span><ul>${out.map(x=>`<li>${x}</li>`).join('')}</ul></div>`;
+}
+function lecture(perTxt){
+  const kp=pick(PROG.pfco,'KPI'),kc=pick(PROG.cfid,'KPI');
+  let lead='';
+  if(kp._n&&kc._n&&kp.roi&&kc.roi){const best=kp.roi>=kc.roi?['PFCO',kp.roi,'C.FID',kc.roi]:['C.FID',kc.roi,'PFCO',kp.roi];
+    lead=`<div class="reading-lead"><b>${best[0]}</b> est le dispositif le plus rentable sur la période (ROI ${num(best[1])}x contre ${num(best[3])}x pour ${best[2]}). Ensemble, les deux dispositifs génèrent <b>${eur(kp.caitot+kc.caitot)}</b> de CA additionnel pour ${eur(kp.generosite+kc.generosite)} de générosité.</div>`;}
+  const scope=[perTxt,state.enseigne,state.type,state.marche==='Total'?'tous marchés':state.marche,state.fournisseur==='Total'?'tous fournisseurs':state.fournisseur].map(esc).join(' · ');
+  return `<div class="reading"><div class="reading-head"><div class="reading-title">Lecture de la performance</div><div class="reading-scope">${scope}</div></div>${lead}<div class="reading-cols">${lectureProg('pfco')}${lectureProg('cfid')}</div></div>`;
+}
+
+function diag(){
+  const progs=new Set(ROWS.map(r=>keyed(r).program));const steps=new Set(ROWS.map(r=>keyed(r).etape));
+  const need=['pfco','cfid'],needS=STEPS.map(s=>canonStep(s[0])).concat(['kpi','budget']);
+  const miss=[...need.filter(x=>!progs.has(x)),...needS.filter(x=>!steps.has(x))];
+  if(!miss.length||!ROWS.length) return '';
+  const uniq=f=>[...new Set(ROWS.map(f))].map(v=>JSON.stringify(v)).join(', ');
+  return `<div style="margin-top:12px;font-size:10px;color:#999;">Diagnostic : ${ROWS.length} lignes reçues · valeurs manquantes ${miss.join(', ')} · programmes reçus [${uniq(r=>r.program)}] · étapes reçues [${uniq(r=>r.etapefunnel)}]</div>`;
+}
 let BANNER='';
+function alertBanner(m){BANNER=`<div class="banner err">${esc(m)}</div>`;render();}
 function render(){
   fillFilters();
-  const [t,p]=state.periode.split('|');const perTxt=perLabel(p);
-  $('#meta').textContent=`${state.type} · ${state.enseigne}`;
-  $('#content').innerHTML=`${BANNER}<div class="section-title">Écoulement budgets vs Cadré — ${perTxt}</div>
+  const [t,p]=state.periode?state.periode.split('|'):['',''];const perTxt=perLabel(p||'');
+  const has=['pfco','cfid'].some(k=>pick(PROG[k],'KPI')._n||budget(k).tot.r||budget(k).tot.c);
+  if(!ROWS.length||!has){
+    $('#content').innerHTML=`${BANNER}<div class="empty">Aucune donnée pour cette sélection${state.marche!=='Total'||state.fournisseur!=='Total'?` (marché « ${esc(state.marche)} » × fournisseur « ${esc(state.fournisseur)} »). Repassez l'un des deux filtres sur Total.`:'.'}</div>`;return;}
+  $('#content').innerHTML=`${BANNER}${lecture(perTxt)}<div class="section-title">Écoulement budgets vs Cadré — ${perTxt}</div>
     <div class="ecoulement-section">${ecoCard('pfco')}${ecoCard('cfid')}</div>
     <div class="kpi-section">${kpiCard('pfco',perTxt)}${kpiCard('cfid',perTxt)}</div>${funnel(perTxt)}${diag()}`;
 }
-loadTableau().then(r=>{if(!r.length)throw new Error('La feuille Data ne renvoie aucune ligne');ROWS=r;render();}).catch(err=>{
-  BANNER=IN_FRAME&&!window.__noTableau?`<div class="banner err">Lecture des données Tableau impossible : ${String(err&&err.message||err).replace(/</g,'&lt;')}. Aperçu sur données de démonstration.</div>`:'<div class="banner demo">Aperçu sur des données de démonstration. Dans le dashboard Tableau, la page lit la source data_pp_synthese.</div>';
+initTableau().then(r=>{ROWS=r;render();}).catch(err=>{
+  BANNER=IN_FRAME&&!window.__noTableau?`<div class="banner err">Lecture des données Tableau impossible : ${esc(err&&err.message||err)}. Aperçu sur données de démonstration.</div>`:'<div class="banner demo">Aperçu sur des données de démonstration. Dans le dashboard Tableau, la page lit la source data_pp_synthese.</div>';
+  DOMAIN.marche=['Total','BOISSONS','DPH','EPICERIE SALEE','EPICERIE SUCREE','LIQUIDES.','P.L.S.'];DOMAIN.fournisseur=['Total','Fournisseur A','Fournisseur B','Fournisseur C'];
   ROWS=demoRows();render();});
 })();
 </script>
