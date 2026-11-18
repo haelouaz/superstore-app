@@ -1,0 +1,1083 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parcours Programme Club</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout Pulse : barre haute, menu à gauche, écran central (Ma journée = brief / Analyse approfondie = deep dive), panneau Talk to my Data à droite */
+:root{
+  --bg:#F5F6F8; --surface:#FFFFFF; --surface-2:#F3F4F7; --ink:#0E1726; --ink-2:#3A4556; --muted:#5B6474; --line:#E4E7EC;
+  --accent:#2348C9; --accent-ink:#FFFFFF; --accent-soft:#EAF0FF; --accent-deep:#1A3699;
+  --brief:#0E1726; --brief-ink:#FFFFFF; --brief-muted:#9AA6BC; --brief-tile:#1B2638;
+  --alert:#B4530A; --alert-soft:#FFF1E6; --vig:#A16207; --vig-soft:#FEF6DD; --ok:#0F766E; --ok-soft:#E3F5F1; --opp:#2348C9; --opp-soft:#EAF0FF;
+  --neg:#E0915A; --pos:#2348C9; --ia:#6D28D9; --ia-soft:#F1EBFE;
+  --shadow:0 1px 2px rgba(14,23,38,.05),0 8px 24px rgba(14,23,38,.06);
+  --font:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0B0F19; --surface:#131A28; --surface-2:#1A2233; --ink:#E7ECF5; --ink-2:#C3CBD9; --muted:#97A2B6; --line:#263044;
+  --accent:#86A2FF; --accent-ink:#0B0F19; --accent-soft:#1B2650; --accent-deep:#A9BDFF;
+  --brief:#060A12; --brief-ink:#F2F5FA; --brief-muted:#8E9AB0; --brief-tile:#151D2C;
+  --alert:#F5A469; --alert-soft:#3A2416; --vig:#F2C453; --vig-soft:#352B12; --ok:#5ED3C0; --ok-soft:#12302C; --opp:#86A2FF; --opp-soft:#1B2650;
+  --neg:#E59A66; --pos:#86A2FF; --ia:#B794FF; --ia-soft:#2A1F45;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.3); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0B0F19; --surface:#131A28; --surface-2:#1A2233; --ink:#E7ECF5; --ink-2:#C3CBD9; --muted:#97A2B6; --line:#263044;
+  --accent:#86A2FF; --accent-ink:#0B0F19; --accent-soft:#1B2650; --accent-deep:#A9BDFF;
+  --brief:#060A12; --brief-ink:#F2F5FA; --brief-muted:#8E9AB0; --brief-tile:#151D2C;
+  --alert:#F5A469; --alert-soft:#3A2416; --vig:#F2C453; --vig-soft:#352B12; --ok:#5ED3C0; --ok-soft:#12302C; --opp:#86A2FF; --opp-soft:#1B2650;
+  --neg:#E59A66; --pos:#86A2FF; --ia:#B794FF; --ia-soft:#2A1F45;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.3); color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.55;margin:0}
+h1,h2,h3{margin:0;line-height:1.2;text-wrap:balance}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+a{color:var(--accent)}
+.ico{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.num{font-variant-numeric:tabular-nums}
+
+/* Barre haute */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:var(--surface);border-bottom:1px solid var(--line);height:68px;display:flex;align-items:center;gap:14px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:50;background:var(--surface)}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center}
+.brand b{display:block;font-size:17px;font-weight:700;line-height:1.1}
+.brand span{font-size:12px;color:var(--muted)}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;border-radius:999px;padding:5px 12px;white-space:nowrap}
+.chip.src{background:var(--accent-soft);color:var(--accent)}
+.chip.real{background:var(--ok-soft);color:var(--ok)}
+.chip.prof{color:var(--muted)}
+.chip.prof b{color:var(--ink)}
+.bell{position:relative;width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center}
+
+/* Coque */
+.shell{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:calc(100% - 68px)}
+.side{background:var(--surface);border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column;gap:4px;position:sticky;top:68px;height:calc(100vh - 68px);overflow:auto}
+.nav{display:flex;align-items:center;gap:12px;border:0;background:transparent;border-radius:10px;padding:10px 12px;font-size:14.5px;font-weight:500;text-align:left;width:100%}
+.nav:hover{background:var(--surface-2)}
+.nav[aria-current="page"]{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.nav .badge{margin-left:auto;font-size:11px;font-weight:700;border-radius:6px;padding:1px 7px}
+.nav .badge.n{background:var(--alert-soft);color:var(--alert)}
+.nav .badge.ia{background:var(--accent-soft);color:var(--accent)}
+.nav .badge.t{color:var(--muted);font-weight:500}
+.nav.muted{color:var(--muted)}
+.side .grp{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--muted);margin:16px 12px 4px}
+.perim{margin-top:auto;border-top:1px solid var(--line);padding:14px 12px 0;font-size:12px;color:var(--muted)}
+.perim b{display:block;color:var(--ink);font-size:13px}
+
+.stage{display:grid;grid-template-columns:minmax(0,1fr) auto;min-width:0}
+.main{padding:28px max(24px,env(safe-area-inset-right,0px)) 48px 40px;min-width:0}
+.main-in{max-width:1120px;margin:0 auto}
+
+/* Ma journée (brief) */
+.greet{font-size:13.5px;color:var(--muted);font-weight:500}
+.head-row{display:flex;gap:16px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap}
+.h1{font-size:clamp(24px,2.6vw,31px);font-weight:700;letter-spacing:-.01em;margin-top:4px;max-width:34ch}
+.byline{font-size:12.5px;color:var(--muted);margin-top:6px}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 16px;font-weight:600;font-size:14px;border:1px solid var(--line);background:var(--surface)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.dark{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.btn.sm{padding:7px 12px;font-size:13px}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.briefcard{background:var(--brief);color:var(--brief-ink);border-radius:18px;padding:26px 26px 22px;margin-top:22px}
+.briefcard .eb{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--brief-muted)}
+.pts{display:flex;flex-direction:column;gap:14px;margin-top:16px}
+.pt{display:grid;grid-template-columns:28px minmax(0,1fr);gap:14px;align-items:start;font-size:16px;line-height:1.55}
+.pt .k{width:28px;height:28px;border-radius:8px;background:var(--brief-tile);display:grid;place-items:center;font-size:13px;font-weight:700}
+.pt b{font-weight:700}
+.minis{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.mini{background:var(--brief-tile);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:9px 13px;min-width:132px;text-align:left;color:inherit}
+.mini:hover{border-color:rgba(255,255,255,.3)}
+.mini .l{font-size:11.5px;color:var(--brief-muted)}
+.mini .v{font-size:16px;font-weight:700}
+.mini .v small{font-size:12px;font-weight:700;margin-left:4px}
+.mini .v small.n{color:#F5A469} .mini .v small.p{color:#9DB4F5}
+.briefcard .foot{font-size:12px;color:var(--brief-muted);margin-top:14px}
+.domains{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px;margin-top:16px}
+.dom{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;text-align:left;min-width:0}
+.dom:hover{border-color:var(--accent)}
+.dom b{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dom span{font-size:12px;color:var(--muted)}
+.dot{width:9px;height:9px;border-radius:50%;flex:none;display:inline-block}
+.dot.alert{background:var(--alert)} .dot.vig{background:var(--vig)} .dot.ok{background:var(--ok)} .dot.opp{background:var(--opp)}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;margin-top:24px;align-items:start}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.sec-h h2{font-size:19px;font-weight:700}
+.sec-h p{font-size:12.5px;color:var(--muted)}
+.signal{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+.sig-top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tag{font-size:12px;font-weight:700;border-radius:6px;padding:3px 9px}
+.tag.alert{background:var(--alert-soft);color:var(--alert)} .tag.vig{background:var(--vig-soft);color:var(--vig)} .tag.ok{background:var(--ok-soft);color:var(--ok)} .tag.opp{background:var(--opp-soft);color:var(--opp)}
+.tag.dom2{border:1px solid var(--line);font-weight:600;color:var(--ink-2)}
+.impact{margin-left:auto;font-size:13.5px;font-weight:700;color:var(--alert)}
+.impact.p{color:var(--accent)}
+.signal h3{font-size:17px;font-weight:700}
+.signal p{font-size:14.5px;color:var(--ink-2)}
+.sig-act{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.conf{margin-left:auto;font-size:12px;color:var(--muted)}
+.aside{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 16px 6px;position:sticky;top:84px}
+.aside .eb{font-size:11.5px;font-weight:800;letter-spacing:.07em;color:var(--accent)}
+.aside .sub{font-size:12.5px;color:var(--muted);margin:4px 0 8px}
+.vline{display:grid;grid-template-columns:10px minmax(0,1fr);gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:13px;text-align:left;background:transparent;border-left:0;border-right:0;border-bottom:0;width:100%}
+.vline .dot{margin-top:6px}
+.vline b{display:block;font-size:13px}
+.vline span{color:var(--muted);font-size:12.5px;line-height:1.4;display:block}
+
+/* Analyse approfondie (deep dive) */
+.back{border:0;background:transparent;color:var(--muted);font-weight:600;font-size:14px;display:inline-flex;gap:6px;align-items:center;padding:0;margin-bottom:8px}
+.crumb{font-size:13.5px;color:var(--muted)}
+.toc{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:16px 0 18px}
+.toc .l{font-size:13px;color:var(--muted);font-weight:600;margin-right:4px}
+.toc button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:500}
+.toc button:hover{border-color:var(--accent);color:var(--accent)}
+.asec{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:26px 28px;margin-bottom:16px;scroll-margin-top:84px}
+.asec-h{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.asec .eb{font-size:12px;font-weight:800;letter-spacing:.06em;color:var(--accent);text-transform:uppercase}
+.asec h2{font-size:21px;font-weight:700;margin-top:4px}
+.ask-btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 12px;font-size:13px;font-weight:600;white-space:nowrap}
+.ask-btn:hover{border-color:var(--ia);color:var(--ia)}
+.prose{margin-top:14px;display:flex;flex-direction:column;gap:12px;font-size:15.5px;line-height:1.75;color:var(--ink-2);max-width:78ch}
+.prose b{color:var(--ink);font-weight:700}
+.gtoggle{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid var(--line);margin-top:18px;padding-top:12px;flex-wrap:wrap}
+.gbtn{border:0;background:transparent;color:var(--accent);font-weight:600;font-size:14px;display:inline-flex;gap:8px;align-items:center;padding:6px 8px}
+.gwrap{margin-top:10px}
+.gcap{font-size:12.5px;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.seg{display:inline-flex;background:var(--surface-2);border-radius:9px;padding:3px}
+.seg button{border:0;background:transparent;border-radius:7px;padding:4px 11px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.chart{width:100%;overflow-x:auto}
+.chart svg{display:block;width:100%;height:auto;min-width:520px;max-width:780px}
+.chart svg text{font-family:var(--font)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:6px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:14px;height:10px;border-radius:3px}
+.src{font-size:12px;color:var(--muted);margin-top:6px}
+.hyp{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--surface);display:flex;flex-direction:column;gap:6px}
+.hyps{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.hyp-h{display:flex;gap:10px;align-items:center}
+.hyp-h b{font-size:15px}
+.hyp-h .imp{margin-left:auto;font-weight:700;font-size:14px;color:var(--alert);white-space:nowrap}
+.hyp-h .imp.p{color:var(--accent)} .hyp-h .imp.z{color:var(--muted)}
+.hyp p{font-size:14px;color:var(--ink-2)}
+.hyp .s{font-size:12px;color:var(--muted)}
+.st{font-size:11.5px;font-weight:700;border-radius:6px;padding:2px 8px;white-space:nowrap}
+.st.c{background:var(--accent-soft);color:var(--accent)} .st.pa{background:var(--vig-soft);color:var(--vig)} .st.r{background:var(--surface-2);color:var(--muted)} .st.v{background:var(--ia-soft);color:var(--ia)}
+.hyp.rej{opacity:.75}
+.reco{display:grid;grid-template-columns:30px minmax(0,1fr);gap:14px;border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:10px}
+.reco .k{width:30px;height:30px;border-radius:9px;background:var(--ink);color:var(--surface);display:grid;place-items:center;font-weight:700;font-size:14px}
+.reco b{font-size:15.5px}
+.reco p{font-size:14px;color:var(--ink-2);margin-top:4px}
+.reco .meta{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:10px;align-items:center}
+.reco .meta b{font-size:12.5px;color:var(--ink)}
+.reco .meta .btn{margin-left:auto}
+.method{background:var(--surface-2);border-radius:14px;padding:16px 18px;font-size:13.5px;color:var(--ink-2);line-height:1.6}
+.method b{color:var(--ink)}
+table.t{width:100%;border-collapse:collapse;font-size:13.5px}
+table.t th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
+table.t td{padding:7px 8px;border-bottom:1px solid var(--line)}
+table.t .r{text-align:right}
+.pill{font-size:12px;font-weight:700;border-radius:6px;padding:2px 6px;white-space:nowrap}
+.pill.up{background:var(--accent-soft);color:var(--accent)} .pill.down{background:var(--alert-soft);color:var(--alert)}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+
+/* Talk to my Data */
+.ttmd{width:400px;background:var(--surface);border-left:1px solid var(--line);position:sticky;top:68px;height:calc(100vh - 68px);display:flex;flex-direction:column}
+.ttmd[hidden]{display:none!important}
+.tt-h{padding:18px 18px 14px;border-bottom:1px solid var(--line);display:grid;grid-template-columns:36px minmax(0,1fr) 28px;gap:12px;align-items:start}
+.tt-h .lg{width:36px;height:36px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center}
+.tt-h b{font-size:16px}
+.tt-h p{font-size:12.5px;color:var(--muted)}
+.tt-h .x{border:0;background:transparent;font-size:20px;color:var(--muted);line-height:1}
+.ctx{grid-column:1 / -1;font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:3px 8px;justify-self:start}
+.tt-body{flex:1;overflow:auto;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.msg-u{align-self:flex-end;background:var(--accent);color:var(--accent-ink);border-radius:14px 14px 4px 14px;padding:10px 14px;font-size:14px;max-width:90%}
+.steps{border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:13px;display:flex;flex-direction:column;gap:5px}
+.steps .eb{font-size:11px;font-weight:800;letter-spacing:.07em;color:var(--muted)}
+.steps .s0{color:var(--muted)} .steps .s1{color:var(--ink);font-weight:600} .steps .s2{color:var(--ink)}
+.msg-a{background:var(--surface-2);border-radius:14px 14px 14px 4px;padding:12px 14px;font-size:14px;line-height:1.6}
+.msg-a b{font-weight:700}
+.msg-a .srcs{margin-top:8px;font-size:11.5px;color:var(--muted)}
+.sugg{display:flex;flex-direction:column;gap:6px}
+.sugg .eb{font-size:11px;font-weight:800;letter-spacing:.07em;color:var(--muted)}
+.sugg button{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 12px;font-size:13px}
+.sugg button:hover{border-color:var(--accent)}
+.tt-in{border-top:1px solid var(--line);padding:12px 18px;display:flex;gap:8px}
+.tt-in input{flex:1;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:10px 12px;font:inherit;font-size:14px;min-width:0}
+.tt-note{font-size:11.5px;color:var(--muted);padding:0 18px 12px}
+
+.view[hidden]{display:none!important}
+.fade{animation:fade .3s ease both}
+@keyframes fade{from{opacity:.35;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.fade{animation:none}}
+
+@media (max-width:1280px){.domains{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:1200px){
+  .ttmd{position:fixed;right:0;top:68px;z-index:45;box-shadow:var(--shadow);width:min(400px,100%);padding-right:env(safe-area-inset-right,0px)}
+  .cols{grid-template-columns:minmax(0,1fr)}
+  .aside{position:static}
+}
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .side{position:static;height:auto;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px max(12px,env(safe-area-inset-left,0px))}
+  .side .grp,.perim,.side .hide-sm{display:none}
+  .nav{width:auto;white-space:nowrap}
+  .main{padding:20px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+  .chip.prof,.chip.src{display:none}
+  .two{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:560px){
+  .domains{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .asec{padding:20px 18px}
+  .asec-h{flex-direction:column}
+  .topbar{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .brand span{display:none}
+}
+
+/* Ajouts v4 : graphiques visibles, dashboard régalien intégré */
+.figs{display:flex;flex-direction:column;gap:18px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)}
+.fig{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fig-h{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.fig-h h3{font-size:14.5px;font-weight:700}
+.fig-act{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.mini-link{border:0;background:transparent;color:var(--accent);font-weight:600;font-size:12.5px;padding:4px 6px;border-radius:6px;display:inline-flex;gap:6px;align-items:center}
+.mini-link:hover{background:var(--accent-soft)}
+.axes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px}
+.rg-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.rg-card .eb{font-size:11.5px;font-weight:800;letter-spacing:.07em;color:var(--accent)}
+.rg-card p{font-size:13px;color:var(--muted)}
+.kline{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:7px 0;border-top:1px solid var(--line)}
+.kline b{font-weight:700;white-space:nowrap}
+/* Dashboard régalien */
+.rg-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-end;flex-wrap:wrap}
+.cert{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ok);background:var(--ok-soft);border-radius:6px;padding:3px 9px}
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin-top:16px}
+.filt{display:flex;flex-direction:column;gap:3px}
+.filt label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.filt select{font:inherit;font-size:13.5px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:6px 8px}
+.filters .note{margin-left:auto;font-size:12px;color:var(--muted);max-width:30ch}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-top:18px;overflow-x:auto}
+.tabs button{border:0;background:transparent;padding:10px 14px;font-size:14px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.kgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:16px}
+.ktile{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 15px;display:flex;flex-direction:column;gap:4px;text-align:left}
+.ktile:hover{border-color:var(--accent)}
+.ktile .l{font-size:12.5px;color:var(--muted);font-weight:600}
+.ktile .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ktile .d{font-size:12.5px;font-weight:700;display:flex;gap:8px;flex-wrap:wrap}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-top:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.panel .tbl{overflow-x:auto}
+.c-up{color:var(--accent)} .c-down{color:var(--alert)}
+@media (max-width:900px){.kgrid,.axes{grid-template-columns:repeat(2,minmax(0,1fr))}.filters .note{margin-left:0}}
+
+.rgwrap{display:grid;grid-template-columns:200px minmax(0,1fr);gap:18px;margin-top:18px;align-items:start}
+.rgnav{position:sticky;top:84px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:2px}
+.rgnav .rgg{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--muted);margin:10px 8px 4px}
+.rgnav .rgg:first-child{margin-top:4px}
+.rgnav button{border:0;background:transparent;text-align:left;border-radius:8px;padding:8px 10px;font-size:13.5px;font-weight:500}
+.rgnav button:hover{background:var(--surface-2)}
+.rgnav button[aria-current="page"]{background:var(--accent-soft);color:var(--accent);font-weight:700}
+.rgcontent{min-width:0}
+.rgdesc{font-size:14px;color:var(--muted);max-width:80ch}
+.rgcontent .filters{margin-top:12px}
+@media (max-width:1100px){.rgwrap{grid-template-columns:minmax(0,1fr)}.rgnav{position:static;flex-direction:row;flex-wrap:wrap}.rgnav .rgg{display:none}}
+@media (max-width:900px){.rgcontent .kgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+.chip.demo{background:var(--alert-soft);color:var(--alert)}
+.gbar{margin:0 0 22px}.gbar.busy{opacity:.7}.gbar .gmore{display:flex;gap:10px;flex-wrap:wrap;width:100%;padding-top:8px;border-top:1px dashed var(--line)}
+.gmore-btn{align-self:flex-end;font:inherit;font-size:12.5px;font-weight:600;color:var(--accent);background:none;border:0;padding:7px 4px;cursor:pointer}
+.filt select:disabled{opacity:.65;cursor:not-allowed}
+</style>
+</head>
+<body>
+
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-trend" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M3 21h18"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M9 3h6l-1 6 3 3H7l3-3z"/><path d="M12 12v9"/></symbol>
+  <symbol id="i-layout" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 14v5a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></symbol>
+  <symbol id="i-bar" viewBox="0 0 24 24"><path d="M4 20h16M7 16V10M12 16V6M17 16v-4"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></symbol>
+</svg>
+
+<header class="topbar">
+  <span class="logo"><svg class="ico"><use href="#i-pulse"/></svg></span>
+  <div class="brand"><b>Pulse</b><span>Plateforme Data Products &amp; IA</span></div>
+  <div class="tb-right">
+    <span class="chip src" id="srcChip"><svg class="ico" style="width:15px;height:15px"><use href="#i-db"/></svg> Données fictives de démonstration</span>
+    <span class="chip prof">Profil <b>Siège · Resp. fidélité</b></span>
+    <span class="chip demo" id="modeChip">Mode démo · données fictives</span>
+    <button type="button" class="bell" aria-label="Notifications"><svg class="ico"><use href="#i-bell"/></svg></button>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="side" aria-label="Navigation">
+    <button type="button" class="nav" data-go="brief" aria-current="page"><svg class="ico"><use href="#i-sun"/></svg>Ma journée<span class="badge n">5</span></button>
+    <button type="button" class="nav" data-go="deep"><svg class="ico"><use href="#i-trend"/></svg>Analyse approfondie<span class="badge t">7 min</span></button>
+    <button type="button" class="nav" data-go="ttmd"><svg class="ico"><use href="#i-chat"/></svg>Talk to my Data<span class="badge ia">IA</span></button>
+    <div class="grp">DASHBOARDS RÉGALIENS</div>
+    <button type="button" class="nav" data-go="rg"><svg class="ico"><use href="#i-grid"/></svg>Programme Club</button>
+    <button type="button" class="nav muted hide-sm" disabled><svg class="ico"><use href="#i-grid"/></svg>Promo Perso</button>
+    <button type="button" class="nav muted hide-sm" disabled><svg class="ico"><use href="#i-grid"/></svg>Contactabilité</button>
+    <div class="grp">MON ESPACE</div>
+    <button type="button" class="nav muted hide-sm" disabled><svg class="ico"><use href="#i-sliders"/></svg>Studio de brief</button>
+    <button type="button" class="nav muted hide-sm" disabled><svg class="ico"><use href="#i-pin"/></svg>Mes cockpits</button>
+    <button type="button" class="nav muted hide-sm" disabled><svg class="ico"><use href="#i-layout"/></svg>Studio de cockpit</button>
+    <div class="grp">GOUVERNANCE</div>
+    <button type="button" class="nav muted hide-sm" disabled><svg class="ico"><use href="#i-eye"/></svg>Observabilité</button>
+    <div class="perim"><b>Votre périmètre</b>National · encartés</div>
+  </nav>
+
+  <div class="stage">
+    <main class="main"><div class="main-in">
+      <div id="gbar"></div>
+      <section class="view" id="v-brief"></section>
+      <section class="view" id="v-deep" hidden></section>
+      <section class="view" id="v-rg" hidden></section>
+    </div></main>
+    <aside class="ttmd" id="ttmd" hidden aria-label="Talk to my Data">
+      <div class="tt-h">
+        <span class="lg"><svg class="ico"><use href="#i-spark"/></svg></span>
+        <div><b>Talk to my Data</b><p>Définitions, contexte métier et analyses sur le Programme Club</p></div>
+        <button type="button" class="x" id="ttClose" aria-label="Fermer">×</button>
+        <span class="ctx" id="ttCtx">Contexte : Programme Club</span>
+      </div>
+      <div class="tt-body" id="ttBody"></div>
+      <form class="tt-in" id="ttForm"><input id="ttInput" type="text" placeholder="Posez une question sur le Programme Club" aria-label="Question"><button type="submit" class="btn primary sm" aria-label="Envoyer"><svg class="ico" style="width:16px;height:16px"><use href="#i-send"/></svg></button></form>
+      <p class="tt-note">Prototype : réponses pré-calculées sur les questions de référence du POC.</p>
+    </aside>
+  </div>
+</div>
+
+
+<script src="https://tableau.github.io/extensions-api/lib/tableau.extensions.1.latest.min.js"></script>
+<script>
+(function(){
+"use strict";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const icon=(n,s=16)=>`<svg class="ico" style="width:${s}px;height:${s}px"><use href="#i-${n}"/></svg>`;
+
+/* ===================== FORMATAGE ===================== */
+const nf=(v,d)=>Number(v).toLocaleString('fr-FR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const S=v=>v>0?'+':v<0?'−':'';
+const NB='\u00a0';
+const pct=(r,d=2)=>r==null?'—':nf(r*100,d)+NB+'%';                 // ratio -> "12,34 %"
+const evo=(r,d=1)=>r==null||!isFinite(r)?'—':S(r)+nf(Math.abs(r*100),d)+NB+'%'; // ratio -> "+5,6 %"
+const pts=(r,d=1)=>r==null||!isFinite(r)?'—':S(r)+nf(Math.abs(r*100),d)+NB+'pt';  // écart de ratio -> "+0,7 pt"
+const meur=(v)=>{const m=v/1e6;return nf(m,Math.abs(m)>=100?0:1)+NB+'M€';};
+const dmeur=(v)=>S(v)+meur(Math.abs(v));
+const cnt=(v)=>Math.abs(v)>=1e6?nf(v/1e6,2)+' M':Math.abs(v)>=1e3?nf(v/1e3,1)+' K':nf(v,0);
+const vol=(v)=>Math.abs(v)>=1e6?nf(v/1e6,1)+' M':cnt(v);
+const eur=(v,d=2)=>nf(v,d)+NB+'€';
+const dec=(v,d=1)=>nf(v,d);
+const cls=r=>r>0?'up':r<0?'down':'';
+const pill=(r,kind='evo')=>`<span class="pill ${cls(r)}">${kind==='pts'?pts(r):evo(r)}</span>`;
+const ev=(n,n1)=>n1?n/n1-1:null;
+const verb=(r,a='progresse',b='recule',c='est stable')=>Math.abs(r)<0.0005?c:r>0?a:b;
+
+/* ===================== DONNÉES FICTIVES (mode démo) =====================
+   Format unique, identique à la feuille Tableau PULSE_DATA :
+   [bloc, dim, mesure, valeur, ordre] · ratios en décimal (0,5458 = 54,58 %), montants en €, volumes en unités */
+function demoRows(){
+  const R=[],a=(b,d,m,v,o)=>R.push([b,d,m,v,o==null?null:o]);
+  a('meta','','semaine',46);a('meta','','annee',2026);a('meta','','maj',20261116);a('meta','Hyper','format_focus',1);
+  const K={    clients_e:11.2e6,clients_e_n1:11.3e6,freq_e:27.68,freq_e_n1:26.19,depense_e:1357.1,depense_e_n1:1323.0,panier_e:49.03,panier_e_n1:50.51,articles_e:14.8,articles_e_n1:15.1,prix_e:3.313,prix_e_n1:3.345,
+    panier_ne:16.39,panier_ne_n1:17.17,articles_ne:5.2,articles_ne_n1:5.5,prix_ne:3.152,prix_ne_n1:3.121,
+    foyers_n:9.10e6,foyers_n1:9.25e6,foyers_gagnes:1.85e6,foyers_perdus:2.0e6,ca_solde_n1:4.60e9,ca_gagnes:420e6,ca_constants:60e6,ca_perdus:-380e6,ca_solde_n:4.70e9,
+    cst_ca_n1:4.10e9,cst_ca_n:4.16e9,cst_depense_n1:512.0,cst_depense_n:519.6,cst_freq_n1:10.6,cst_freq_n:10.8,cst_panier_n1:48.3,cst_panier_n:48.1,cst_articles_n1:14.9,cst_articles_n:14.7,cst_prix_n1:3.24,cst_prix_n:3.27,
+    seg_ca:320e6,seg_ca_n1:316e6,seg_clients:3.9e6,seg_depense:82.05,seg_panier:47.9};
+  Object.entries(K).forEach(([m,v])=>a('kpi','',m,v));
+  const F=[ // nom, ca_e,n1, ca_ne,n1, debit_e,n1, debit_ne,n1, obj_ca, obj_debit, recrues,n1, foyers,n1, effets (format_ca,mix_ca,format_debit,mix_debit)
+    ['Groupe',15.2e9,14.95e9,11.8e9,12.05e9,310e6,296e6,720e6,702e6,.57,.315,1.12e6,1.09e6,9.10e6,9.25e6,null],
+    ['Hyper',7.4e9,7.45e9,3.1e9,3.25e9,118e6,116e6,112e6,115e6,.71,.52,400e3,380e3,5.2e6,5.35e6,[.0030,-.0020,.0024,-.0010]],
+    ['Market',5.1e9,5.0e9,3.9e9,3.95e9,115e6,110e6,180e6,178e6,.58,.40,300e3,315e3,4.1e6,4.15e6,[.0028,-.0004,.0018,-.0006]],
+    ['Proxi',1.4e9,1.3e9,4.7e9,4.75e9,62e6,56e6,427e6,408e6,.25,.14,200e3,195e3,2.3e6,2.2e6,[.0040,-.0019,.0028,-.0016]],
+    ['E-commerce',1.3e9,1.2e9,0.1e9,0.1e9,15e6,14e6,1e6,1e6,null,null,220e3,200e3,1.0e6,0.95e6,[.0003,.0035,.0001,.0005]]];
+  F.forEach((f,i)=>{const n=f[0],o=i+1;
+    a('format',n,'ca_e',f[1],o);a('format',n,'ca_e_n1',f[2],o);a('format',n,'ca_ne',f[3],o);a('format',n,'ca_ne_n1',f[4],o);
+    a('format',n,'debit_e',f[5],o);a('format',n,'debit_e_n1',f[6],o);a('format',n,'debit_ne',f[7],o);a('format',n,'debit_ne_n1',f[8],o);
+    if(f[9]!=null)a('format',n,'poids_ca_obj',f[9],o);if(f[10]!=null)a('format',n,'poids_debit_obj',f[10],o);
+    a('format',n,'recrues',f[11],o);a('format',n,'recrues_n1',f[12],o);a('format',n,'foyers',f[13],o);a('format',n,'foyers_n1',f[14],o);
+    if(f[15]){a('format',n,'effet_format_ca',f[15][0],o);a('format',n,'effet_mix_ca',f[15][1],o);a('format',n,'effet_format_debit',f[15][2],o);a('format',n,'effet_mix_debit',f[15][3],o);}});
+  [['Clients',-131e6],['Fréquence',840e6],['Prix',-160e6],['Articles / panier',-290e6],['Effets croisés',-9e6]].forEach((e,i)=>a('eqc_e',e[0],'effet',e[1],i+1));
+  [['Débit',310e6],['Prix',120e6],['Articles / panier',-660e6],['Effets croisés',-20e6]].forEach((e,i)=>a('eqc_ne',e[0],'effet',e[1],i+1));
+  [['Hebdomadaires',150e6,143e6,1.6e6,.041,.006,.002],['Bi-mensuels',85e6,84e6,1.05e6,.008,.004,0],['Mensuels',55e6,56e6,.85e6,-.012,-.004,-.002],['Irréguliers',30e6,33e6,.4e6,-.07,-.02,0]]
+    .forEach((s,i)=>{const o=i+1;a('segment',s[0],'ca',s[1],o);a('segment',s[0],'ca_n1',s[2],o);a('segment',s[0],'clients',s[3],o);a('segment',s[0],'effet_clients',s[4],o);a('segment',s[0],'effet_freq',s[5],o);a('segment',s[0],'effet_panier',s[6],o);});
+  [1.0,1.4,1.9,2.2,2.8,3.1,3.6,3.9,4.2,4.5,4.8,5.0,5.1,5.2,5.3,5.3].forEach((v,i)=>a('rec_semaine','S'+(31+i),'ecart_cumule',v/100,31+i));
+  [['Application',.42,.37,.55,.48],['Carrefour.fr',.24,.23,.19,.18],['Cartes',.34,.40,.26,.34]].forEach((c,i)=>{const o=i+1;a('canal',c[0],'part_groupe',c[1],o);a('canal',c[0],'part_groupe_n1',c[2],o);a('canal',c[0],'part_focus',c[3],o);a('canal',c[0],'part_focus_n1',c[4],o);});
+  [['Bretagne',30e3,28e3,.007],['Normandie',18e3,19e3,-.002],['Île-de-France',95e3,90e3,.012],['Hauts-de-France',38e3,37e3,.009],['Grand Est',22e3,23e3,.004],['PACA',45e3,41e3,.015],['Occitanie',44e3,40e3,.011],['Nouvelle-Aquitaine',36e3,35e3,.006],['Auvergne-Rhône-Alpes',40e3,38e3,.010],['Pays de la Loire',15e3,14e3,.008],['Centre-Val de Loire',14e3,13.5e3,.003]]
+    .forEach(r=>{a('region',r[0],'recrues',r[1]);a('region',r[0],'recrues_n1',r[2]);a('region',r[0],'ecart_poids_debit',r[3]);});
+  [['DT Nord',22,.49,.485,.505,48e3,47e3],['DT Est',18,.51,.50,.515,40e3,39e3],['DT Île-de-France',30,.47,.46,.49,70e3,62e3],['DT Ouest',25,.55,.545,.55,55e3,51e3],['DT Sud-Ouest',20,.53,.52,.535,45e3,44e3],['DT Sud-Est',24,.56,.55,.555,60e3,55e3],['DT Centre',12,.50,.495,.51,25e3,26e3],['DT Rhône-Alpes',19,.54,.53,.545,57e3,56e3]]
+    .forEach((d,i)=>{const o=i+1;a('dt',d[0],'nb_mag',d[1],o);a('dt',d[0],'poids_debit',d[2],o);a('dt',d[0],'poids_debit_n1',d[3],o);a('dt',d[0],'poids_debit_obj',d[4],o);a('dt',d[0],'recrues',d[5],o);a('dt',d[0],'recrues_n1',d[6],o);});
+  [['Magasin H01',.62,.59,.60],['Magasin H02',.48,.45,.47],['Magasin H03',.55,.53,.54],['Magasin H04',.41,.40,.45],['Magasin H05',.39,.40,.44],['Magasin H06',.58,.57,.57],['Magasin H07',.36,.37,.41],['Magasin H08',.52,.49,.50],['Magasin H09',.44,.45,.48],['Magasin H10',.60,.58,.585]]
+    .forEach(m=>{a('mag_poids',m[0],'poids_debit',m[1]);a('mag_poids',m[0],'poids_debit_n1',m[2]);a('mag_poids',m[0],'poids_debit_obj',m[3]);});
+  [['Magasin H11',3.1e3,2.2e3],['Magasin H12',2.4e3,2.0e3],['Magasin H13',1.9e3,1.7e3],['Magasin H14',1.2e3,1.6e3],['Magasin H15',0.9e3,1.3e3],['Magasin H16',2.0e3,2.3e3],['Magasin H17',1.5e3,1.4e3],['Magasin H18',0.8e3,1.0e3],['Magasin H19',2.6e3,2.5e3],['Magasin H20',1.1e3,0.9e3]]
+    .forEach(m=>{a('mag_rec',m[0],'recrues',m[1]);a('mag_rec',m[0],'recrues_n1',m[2]);});
+  [['Membres Club',12.0e6,11.9e6,1420,1400,1],['Clients Pass',.9e6,.85e6,2650,2600,0],['Membres Communauté',.6e6,.45e6,2400,2550,0],['Utilisateurs App',3.8e6,3.3e6,1890,1930,0],['Avantages activés',8.1e6,7.5e6,1580,1610,0]]
+    .forEach((v,i)=>{const o=i+1;a('activation',v[0],'clients',v[1],o);a('activation',v[0],'clients_n1',v[2],o);a('activation',v[0],'depense',v[3],o);a('activation',v[0],'depense_n1',v[4],o);a('activation',v[0],'reference',v[5],o);});
+  [['Mono format',4.3e6,.47,.49],['Multi offline',3.3e6,.36,.36],['Multi online',1.25e6,.137,.12],['Exclusif online',.3e6,.033,.03]].forEach((m,i)=>{const o=i+1;a('mixite',m[0],'foyers',m[1],o);a('mixite',m[0],'part',m[2],o);a('mixite',m[0],'part_n1',m[3],o);});
+  const MC=['Exclusif online','Mono format','Multi offline','Multi online'],MV=[[.62,.10,.04,.24],[.004,.75,.20,.046],[.002,.24,.69,.068],[.03,.14,.20,.63]];
+  MC.forEach((f,i)=>MC.forEach((t,j)=>a('matrice',f+'>'+t,'part',MV[i][j],i*10+j)));
+  return R;
+}
+
+/* ===================== MODÈLE ===================== */
+let M=null, MODE='demo', MODE_MSG='';
+let CTXL={};
+function buildModel(rows){
+  const B={};
+  rows.forEach(([b,d,m,v,o])=>{if(b==null||m==null)return;b=String(b).trim();d=(d==null||d==='%null%')?'':String(d).trim();m=String(m).trim();
+    const x=((B[b]=B[b]||{})[d]=B[b][d]||{_o:null});x[m]=v==null||v===''?null:Number(v);if(o!=null&&o!==''&&!isNaN(o))x._o=Number(o);});
+  const list=b=>Object.entries(B[b]||{}).map(([k,v])=>Object.assign({name:k},v)).sort((x,y)=>(x._o??1e9)-(y._o??1e9));
+  const K=(B.kpi||{})['']||{};const meta=(B.meta||{})['']||{};
+  const focus=Object.keys(B.meta||{}).find(k=>k&&B.meta[k].format_focus)||'Hyper';
+  const formats=list('format').map(f=>Object.assign(f,{
+    poids_ca:f.poids_ca??f.ca_e/(f.ca_e+f.ca_ne),poids_ca_n1:f.poids_ca_n1??f.ca_e_n1/(f.ca_e_n1+f.ca_ne_n1),poids_debit:f.poids_debit??f.debit_e/(f.debit_e+f.debit_ne),poids_debit_n1:f.poids_debit_n1??f.debit_e_n1/(f.debit_e_n1+f.debit_ne_n1),
+    ev_ca_e:ev(f.ca_e,f.ca_e_n1),ev_ca_ne:ev(f.ca_ne,f.ca_ne_n1),ev_debit_e:ev(f.debit_e,f.debit_e_n1),ev_debit_ne:ev(f.debit_ne,f.debit_ne_n1),ev_rec:ev(f.recrues,f.recrues_n1),solde:(f.foyers||0)-(f.foyers_n1||0)}));
+  const G=formats.find(f=>f.name==='Groupe')||formats[0];
+  const fs=formats.filter(f=>f!==G);
+  const k={...K,
+    poids_ca:G.poids_ca,poids_ca_n1:G.poids_ca_n1,poids_ca_obj:G.poids_ca_obj??K.poids_ca_obj,poids_debit:G.poids_debit,poids_debit_n1:G.poids_debit_n1,poids_debit_obj:G.poids_debit_obj??K.poids_debit_obj,
+    recrues:G.recrues,recrues_n1:G.recrues_n1,ca_e:G.ca_e,ca_e_n1:G.ca_e_n1,ca_ne:G.ca_ne,ca_ne_n1:G.ca_ne_n1,debit_e:G.debit_e,debit_e_n1:G.debit_e_n1,debit_ne:G.debit_ne,debit_ne_n1:G.debit_ne_n1};
+  ['ca_e','ca_ne','debit_e','debit_ne','clients_e','freq_e','depense_e','panier_e','articles_e','prix_e','panier_ne','articles_ne','prix_ne','recrues','seg_ca'].forEach(x=>{k['ev_'+x]=ev(k[x],k[x+'_n1']);});
+  const eqcE=list('eqc_e').map(e=>({name:e.name,v:e.effet})),eqcNE=list('eqc_ne').map(e=>({name:e.name,v:e.effet}));
+  const segs=list('segment').map(s=>Object.assign(s,{ev:ev(s.ca,s.ca_n1)}));const segTot=segs.reduce((a,s)=>a+s.ca,0);segs.forEach(s=>s.poids=segTot?s.ca/segTot:0);
+  const weeks=list('rec_semaine').map(w=>({name:w.name,v:w.ecart_cumule}));
+  const canal=list('canal').map(c=>Object.assign(c,{dg:c.part_groupe-c.part_groupe_n1,df:c.part_focus-c.part_focus_n1}));
+  const regions=list('region').map(r=>Object.assign(r,{ev:ev(r.recrues,r.recrues_n1)}));
+  const dts=list('dt').map(d=>Object.assign(d,{dn1:d.poids_debit-d.poids_debit_n1,dobj:d.poids_debit_obj!=null?d.poids_debit-d.poids_debit_obj:null,ev:ev(d.recrues,d.recrues_n1)}));
+  const magP=list('mag_poids').map(m=>Object.assign(m,{dn1:m.poids_debit-m.poids_debit_n1,dobj:m.poids_debit-m.poids_debit_obj}));
+  const magR=list('mag_rec').map(m=>Object.assign(m,{ev:ev(m.recrues,m.recrues_n1)}));
+  const acts=list('activation');const ref=acts.find(x=>x.reference===1)||acts[0];acts.forEach(x=>{x.mult=ref&&ref.depense?x.depense/ref.depense:null;x.evd=ev(x.depense,x.depense_n1);x.evc=ev(x.clients,x.clients_n1);x.isRef=x===ref;});
+  const mix=list('mixite').map(x=>Object.assign(x,{d:x.part-x.part_n1}));
+  const mat={};Object.entries(B.matrice||{}).forEach(([key,v])=>{const [f,t]=key.split('>');(mat[f]=mat[f]||{})[t]=v.part;});
+  const label=CTXL.label||`CAD S${meta.semaine||'?'} ${meta.annee||''}`.trim();
+  const per=CTXL.label||`semaine ${meta.semaine||'?'}`,perS=CTXL.short||`S${meta.semaine||'?'}`,ax=CTXL.ax||'DT';
+  const maj=meta.maj?String(Math.round(meta.maj)).replace(/(\d{4})(\d{2})(\d{2})/,'$3/$2/$1'):'';
+  return {k,G,fs,formats,eqcE,eqcNE,segs,weeks,canal,regions,dts,magP,magR,acts,ref,mix,mat,focus,label,maj,sem:meta.semaine,annee:meta.annee,per,perS,perC:per.charAt(0).toUpperCase()+per.slice(1),ax,scope:CTXL.scope||''};
+}
+
+/* ===================== ANALYSE (règles déterministes, aucun chiffre inventé) ===================== */
+function analyse(){
+  const {k,G,fs,eqcE,eqcNE,segs,weeks,canal,regions,dts,magP,magR,acts,mix,focus}=M;
+  const A={};
+  const F=fs.find(f=>f.name===focus)||fs[0];A.F=F;
+  A.pos=[...eqcE].sort((a,b)=>b.v-a.v)[0];A.neg=[...eqcE].sort((a,b)=>a.v-b.v)[0];
+  A.caDiff=k.wf_e_n1!=null?M.eqcE.reduce((a,e)=>a+e.v,0):k.ca_e-k.ca_e_n1;A.caDiffNE=k.wf_ne_n1!=null?M.eqcNE.reduce((a,e)=>a+e.v,0):k.ca_ne-k.ca_ne_n1;
+  A.gapDebit=k.poids_debit_obj!=null?k.poids_debit-k.poids_debit_obj:null;A.gapCA=k.poids_ca_obj!=null?k.poids_ca-k.poids_ca_obj:null;
+  A.mixWorst=[...fs].filter(f=>f.effet_mix_debit!=null).sort((a,b)=>a.effet_mix_debit-b.effet_mix_debit)[0];
+  A.fmtD=fs.reduce((a,f)=>a+(f.effet_format_debit||0),0);A.mixD=fs.reduce((a,f)=>a+(f.effet_mix_debit||0),0);
+  A.fmtC=fs.reduce((a,f)=>a+(f.effet_format_ca||0),0);A.mixC=fs.reduce((a,f)=>a+(f.effet_mix_ca||0),0);
+  A.recWorstF=[...fs].sort((a,b)=>a.ev_rec-b.ev_rec)[0];A.recBestF=[...fs].sort((a,b)=>b.ev_rec-a.ev_rec)[0];
+  A.segBest=[...segs].sort((a,b)=>b.ev-a.ev)[0];A.segWorst=[...segs].sort((a,b)=>a.ev-b.ev)[0];A.segBig=[...segs].sort((a,b)=>b.poids-a.poids)[0];
+  A.wFirst=weeks[0];A.wLast=weeks[weeks.length-1];
+  A.carte=canal.find(c=>/carte/i.test(c.name));A.app=canal.find(c=>/app/i.test(c.name));
+  A.regWorst=[...regions].sort((a,b)=>a.ev-b.ev);A.regBest=[...regions].sort((a,b)=>b.ev-a.ev);
+  A.dtUnder=dts.filter(d=>d.dobj!=null&&d.dobj<-0.0005);A.dtWorst=[...dts].sort((a,b)=>(a.dobj??0)-(b.dobj??0));A.dtRecWorst=[...dts].sort((a,b)=>a.ev-b.ev)[0];A.dtRecBest=[...dts].sort((a,b)=>b.ev-a.ev)[0];
+  A.magPTop=[...magP].sort((a,b)=>b.dobj-a.dobj).slice(0,6);A.magPFlop=[...magP].sort((a,b)=>a.dobj-b.dobj).slice(0,6);
+  A.magRTop=[...magR].sort((a,b)=>b.ev-a.ev).slice(0,6);A.magRFlop=[...magR].sort((a,b)=>a.ev-b.ev).slice(0,6);
+  A.actBest=[...acts].filter(x=>!x.isRef).sort((a,b)=>b.mult-a.mult)[0];A.actSecond=[...acts].filter(x=>!x.isRef).sort((a,b)=>b.mult-a.mult)[1];
+  A.mixUp=[...mix].sort((a,b)=>b.d-a.d)[0];A.mixDown=[...mix].sort((a,b)=>a.d-b.d)[0];
+  A.solde=k.foyers_n-k.foyers_n1;A.churn=k.foyers_n1?k.foyers_perdus/k.foyers_n1:null;
+  A.prixE=eqcE.find(e=>/prix/i.test(e.name));A.artE=eqcE.find(e=>/article/i.test(e.name));A.freqE=eqcE.find(e=>/fr[ée]quence/i.test(e.name));A.cliE=eqcE.find(e=>/client/i.test(e.name));
+  /* Garde-fous : un filtre Tableau peut vider une feuille (ex. PASS × New Carrefour × statut) */
+  {const NIL={name:'—',ev:null,v:null,d:null,mult:null,poids:null,dobj:null,dn1:null,ev_rec:null,effet_clients:null,effet_freq:null,effet_panier:null,recrues:null,poids_debit:null,poids_debit_obj:null,isRef:false};
+   ['pos','neg','recWorstF','recBestF','segBest','segWorst','segBig','wLast','dtRecWorst','dtRecBest','freqE','cliE','F'].forEach(x=>{if(A[x]==null)A[x]=NIL;});
+   if(!A.segWorst&&segs.length)A.segWorst=segs[0];['regWorst','regBest','dtWorst'].forEach(x=>{if(!A[x].length)A[x]=[NIL];});A.NIL=NIL;}
+  /* Signaux, classés par gravité */
+  const sig=[];
+  if(k.ev_recrues<-0.02)sig.push({lv:3,t:'alert',tl:'Alerte',dom:'Recrutement',sec:'base',q:'rec'});
+  else if(A.recWorstF&&A.recWorstF.ev_rec<-0.02)sig.push({lv:2,t:'vig',tl:'Vigilance',dom:'Recrutement',sec:'base',q:'rec'});
+  if(k.ev_panier_e<0)sig.push({lv:2,t:'vig',tl:'Vigilance',dom:'Panier',sec:'moteurs',q:'eqc'});
+  if(A.gapDebit!=null&&A.gapDebit<-0.005)sig.push({lv:2,t:'vig',tl:'Vigilance',dom:'Contribution',sec:'causes',q:'mix'});
+  if(A.segWorst&&A.segWorst.ev<-0.03)sig.push({lv:2,t:'vig',tl:'Vigilance',dom:'Rétention',sec:'moteurs',q:'seg'});
+  if(A.solde<0)sig.push({lv:3,t:'alert',tl:'Alerte',dom:'Base clients',sec:'base',q:'base'});
+  if(A.actBest&&A.actBest.mult>=1.3)sig.push({lv:1,t:'opp',tl:'Opportunité',dom:'Valeur & activation',sec:'leviers',q:'val'});
+  A.signals=sig.sort((a,b)=>b.lv-a.lv);
+  return A;
+}
+
+/* ===================== GRAPHIQUES ===================== */
+const T=(x,y,t,o={})=>`<text x="${x}" y="${y}" font-size="${o.fs||12}" font-weight="${o.fw||500}" fill="${o.fill||'var(--muted)'}" text-anchor="${o.a||'start'}">${esc(t)}</text>`;
+const SV=(w,h)=>`<svg viewBox="0 0 ${w} ${h}" role="img" xmlns="http://www.w3.org/2000/svg">`;
+const niceMax=v=>{const p=Math.pow(10,Math.floor(Math.log10(v||1)));return Math.ceil((v||1)/p)*p;};
+function poidsChart(m){
+  const F=M.formats,W=720,rowH=46,top=24,left=110,right=150,H=top+rowH*F.length+20,x=v=>left+(W-left-right)*v;let s=SV(W,H);
+  [0,.25,.5,.75,1].forEach(g=>{s+=`<line x1="${x(g)}" x2="${x(g)}" y1="${top-8}" y2="${H-14}" stroke="var(--line)"/>`+T(x(g),top-12,(g*100)+' %',{a:'middle',fs:11});});
+  F.forEach((f,i)=>{const y=top+i*rowH+8,v=m==='CA'?f.poids_ca:f.poids_debit,n1=m==='CA'?f.poids_ca_n1:f.poids_debit_n1,ob=m==='CA'?f.poids_ca_obj:f.poids_debit_obj;
+    s+=T(left-12,y+17,f.name,{a:'end',fw:600,fill:'var(--ink)',fs:13});
+    s+=`<rect x="${x(0)}" y="${y}" width="${Math.max(x(v)-x(0),1)}" height="24" rx="5" fill="var(--pos)" opacity="${i===0?1:.75}"/>`;
+    if(n1!=null)s+=`<line x1="${x(n1)}" x2="${x(n1)}" y1="${y-4}" y2="${y+28}" stroke="var(--ink)" stroke-width="2"/>`;
+    if(ob!=null)s+=`<path d="M${x(ob)} ${y-7}l6 6-6 6-6-6z" fill="var(--alert)"/>`;
+    s+=T(x(1)+12,y+11,pct(v),{fw:700,fill:'var(--ink)',fs:13});
+    s+=T(x(1)+12,y+27,[n1!=null?pts(v-n1)+' N-1':'',ob!=null?pts(v-ob)+' obj':''].filter(Boolean).join(' · '),{fs:11});});
+  return s+'</svg>';
+}
+function evolChart(m){
+  const F=M.formats,vals=F.flatMap(f=>m==='CA'?[f.ev_ca_e,f.ev_ca_ne]:[f.ev_debit_e,f.ev_debit_ne]).map(v=>Math.abs(v*100));
+  const mx=niceMax(Math.max(...vals,1)),W=720,H=250,top=24,base=150,sc=(base-top-6)/mx,gw=(W-60)/F.length,y=v=>base-v*100*sc;let s=SV(W,H);
+  [-mx,-mx/2,0,mx/2,mx].forEach(g=>{const yy=base-g*sc;if(yy>H-40)return;s+=`<line x1="40" x2="${W-10}" y1="${yy}" y2="${yy}" stroke="${g===0?'var(--muted)':'var(--line)'}" ${g===0?'':'stroke-dasharray="3 4"'}/>`+T(34,yy+4,(g>0?'+':g<0?'−':'')+nf(Math.abs(g),0)+' %',{a:'end',fs:11});});
+  F.forEach((f,i)=>{const cx=50+gw*i+gw/2;[[m==='CA'?f.ev_ca_e:f.ev_debit_e,'var(--pos)',-22,1],[m==='CA'?f.ev_ca_ne:f.ev_debit_ne,'var(--muted)',4,.45]].forEach(([v,c,off,op])=>{
+      const yy=Math.min(y(v),y(0)),h=Math.min(Math.abs(y(v)-y(0)),H-40-base);s+=`<rect x="${cx+off}" y="${yy}" width="18" height="${Math.max(h,1)}" rx="3" fill="${c}" opacity="${op}"/>`;
+      s+=T(cx+off+9,v>=0?yy-5:yy+h+13,evo(v).replace(NB+'%',''),{a:'middle',fs:10.5,fw:700,fill:'var(--ink)'});});
+    s+=T(cx,H-12,f.name,{a:'middle',fw:600,fill:'var(--ink)',fs:12.5});});
+  return s+'</svg>';
+}
+function mixChart(m){
+  const F=M.fs.filter(f=>f.effet_format_debit!=null),kF=m==='CA'?'effet_format_ca':'effet_format_debit',kM=m==='CA'?'effet_mix_ca':'effet_mix_debit';
+  const mx=Math.max(...F.flatMap(f=>[Math.abs(f[kF]),Math.abs(f[kM])]),0.0001),W=720,rowH=40,top=30,mid=380,sc=280/mx,H=top+rowH*F.length+30;let s=SV(W,H);
+  s+=`<line x1="${mid}" x2="${mid}" y1="${top-10}" y2="${H-20}" stroke="var(--muted)"/>`;
+  F.forEach((f,i)=>{const y=top+i*rowH;s+=T(110,y+19,f.name,{a:'end',fw:600,fill:'var(--ink)',fs:13});
+    [[kF,'var(--pos)',0],[kM,'var(--neg)',15]].forEach(([kk,c,o])=>{const v=f[kk],x0=v>=0?mid:mid+v*sc;s+=`<rect x="${x0}" y="${y+o}" width="${Math.max(Math.abs(v)*sc,1.5)}" height="13" rx="3" fill="${c}"/>`;
+      s+=T(v>=0?mid+v*sc+6:mid+v*sc-6,y+o+11,pts(v,2).replace(NB+'pt',''),{a:v>=0?'start':'end',fs:10.5,fill:'var(--ink)'});});});
+  const tf=F.reduce((a,f)=>a+f[kF],0),tm=F.reduce((a,f)=>a+f[kM],0);
+  s+=T(W-10,H-4,`Effet format ${pts(tf,2)} · effet mix ${pts(tm,2)} · écart groupe ${pts(tf+tm,2)}`,{a:'end',fs:11.5,fw:600,fill:'var(--ink)'});
+  return s+'</svg>';
+}
+function waterfall(spec){
+  const items=[spec.start,...spec.steps,spec.end].map(([l,v])=>[l,v/1e6]),W=720,H=270,top=24,base=220,left=20;
+  let acc=items[0][1];const lv=[acc];items.slice(1,-1).forEach(st=>{acc+=st[1];lv.push(acc);});lv.push(items[items.length-1][1]);
+  const mn=Math.min(...lv),mx=Math.max(...lv),rg=(mx-mn)||1,lo=mn-rg*1.2,hi=mx+rg*0.35,y=v=>top+(base-top)*(hi-v)/(hi-lo),bw=(W-left-10)/items.length;let s=SV(W,H),run=items[0][1];
+  s+=`<line x1="${left}" x2="${W-10}" y1="${base}" y2="${base}" stroke="var(--line)"/>`;
+  items.forEach((it,i)=>{const x=left+i*bw+8,w=bw-16;let y0,y1,c,lab;
+    if(i===0||i===items.length-1){y0=y(it[1]);y1=base;c=i===0?'var(--muted)':'var(--pos)';lab=nf(it[1],0)+' M€';}
+    else{const a0=run,b0=run+it[1];y0=y(Math.max(a0,b0));y1=y(Math.min(a0,b0));c=it[1]>=0?'var(--pos)':'var(--neg)';lab=S(it[1])+nf(Math.abs(it[1]),0)+' M€';run=b0;}
+    s+=`<rect x="${x}" y="${y0}" width="${w}" height="${Math.max(y1-y0,2)}" rx="4" fill="${c}" opacity="${i===0?.45:1}"/>`;s+=T(x+w/2,y0-6,lab,{a:'middle',fs:11,fw:700,fill:'var(--ink)'});s+=T(x+w/2,base+18,it[0],{a:'middle',fs:11.5,fw:600,fill:'var(--ink)'});
+    if(i<items.length-1){const yy=y(i===0?items[0][1]:run);s+=`<line x1="${x+w}" x2="${x+w+16}" y1="${yy}" y2="${yy}" stroke="var(--muted)" stroke-dasharray="2 3"/>`;}});
+  s+=T(left,H-6,'Axe tronqué pour rendre les effets lisibles.',{fs:11});return s+'</svg>';
+}
+const wfE=()=>({start:['CA N-1',M.k.wf_e_n1??M.k.ca_e_n1],steps:M.eqcE.map(e=>[e.name.replace('Effets croisés','Croisés'),e.v]),end:['CA N',M.k.wf_e_n1!=null?M.k.wf_e_n1+M.eqcE.reduce((a,e)=>a+e.v,0):M.k.ca_e]});
+const wfNE=()=>({start:['CA N-1',M.k.wf_ne_n1??M.k.ca_ne_n1],steps:M.eqcNE.map(e=>[e.name.replace('Effets croisés','Croisés'),e.v]),end:['CA N',M.k.wf_ne_n1!=null?M.k.wf_ne_n1+M.eqcNE.reduce((a,e)=>a+e.v,0):M.k.ca_ne]});
+const wfSolde=()=>({start:['CA N-1',M.k.ca_solde_n1],steps:[['Gagnés',M.k.ca_gagnes],['Constants',M.k.ca_constants],['Perdus',M.k.ca_perdus]],end:['CA N',M.k.ca_solde_n]});
+function segChart(){
+  const SG=M.segs,W=720,H=250,mx=niceMax(Math.max(...SG.map(g=>Math.abs(g.ev*100)),1)),base=150,sc=110/mx;let s=SV(W,H),x=40;const avail=W-60;
+  s+=`<line x1="30" x2="${W-10}" y1="${base}" y2="${base}" stroke="var(--muted)"/>`;
+  SG.forEach(g=>{const w=avail*g.poids-6,v=g.ev*100,y0=v>=0?base-v*sc:base,h=Math.abs(v)*sc;s+=`<rect x="${x}" y="${y0}" width="${Math.max(w,4)}" height="${Math.max(h,1)}" rx="4" fill="${v>=0?'var(--pos)':'var(--neg)'}"/>`;
+    s+=T(x+w/2,v>=0?y0-6:y0+h+15,evo(g.ev),{a:'middle',fw:700,fill:'var(--ink)',fs:12.5});s+=T(x+w/2,base+(v<0?h+32:22),g.name,{a:'middle',fw:600,fill:'var(--ink)',fs:12});
+    s+=T(x+w/2,base+(v<0?h+47:37),nf(g.poids*100,0)+' % du CA',{a:'middle',fs:11});x+=w+6;});
+  s+=T(30,16,`Évolution du CA par segment, ${M.per} · largeur = poids dans le CA encartés`,{fs:11.5,fw:600});return s+'</svg>';
+}
+function recLine(){
+  const Wk=M.weeks;if(!Wk.length)return '<p class="src">Pas de série hebdomadaire.</p>';
+  const vs=Wk.map(w=>w.v*100),mx=niceMax(Math.max(...vs.map(Math.abs),1)),hasNeg=vs.some(v=>v<0),hasPos=vs.some(v=>v>0);
+  const lo=hasNeg?-mx:0,hi=hasPos?mx:0,W=720,H=230,l=50,r=20,t=24,b=40,y=v=>t+(H-t-b)*(hi-v)/((hi-lo)||1),x=i=>l+(W-l-r)*i/Math.max(Wk.length-1,1);let s=SV(W,H);
+  [hi,(hi+lo)/2,lo].forEach(g=>{s+=`<line x1="${l}" x2="${W-r}" y1="${y(g)}" y2="${y(g)}" stroke="var(--line)" ${g?'stroke-dasharray="3 4"':''}/>`+T(l-8,y(g)+4,(g>0?'+':g<0?'−':'')+nf(Math.abs(g),1)+' %',{a:'end',fs:11});});
+  if(hasNeg&&hasPos)s+=`<line x1="${l}" x2="${W-r}" y1="${y(0)}" y2="${y(0)}" stroke="var(--muted)"/>`;
+  const last=vs[vs.length-1],c=last<0?'var(--alert)':'var(--pos)';
+  s+=`<polyline points="${vs.map((v,i)=>x(i)+','+y(v)).join(' ')}" fill="none" stroke="${c}" stroke-width="2.5"/>`;
+  Wk.forEach((w,i)=>{if(i%3===0||i===Wk.length-1)s+=T(x(i),H-16,w.name,{a:'middle',fs:11});});
+  const li=vs.length-1;s+=`<circle cx="${x(li)}" cy="${y(last)}" r="5" fill="${c}"/>`+T(x(li)-8,y(last)+(last<0?18:-10),evo(last/100),{a:'end',fw:700,fill:c,fs:12.5});
+  s+=T(x(0)+4,y(vs[0])+(vs[0]<0?-10:16),evo(vs[0]/100)+' en '+Wk[0].name,{fs:11});return s+'</svg>';
+}
+function hbars(rows,{max,fmt,l=170}){const W=720,rowH=36,r=200,H=rowH*rows.length+10,x=v=>l+(W-l-r)*Math.max(v,0)/(max||1);let s=SV(W,H);
+  rows.forEach((rw,i)=>{const y=i*rowH+6;s+=T(l-10,y+17,rw.label,{a:'end',fw:600,fill:'var(--ink)',fs:12.5});s+=`<rect x="${l}" y="${y+4}" width="${Math.max(x(rw.v)-l,2)}" height="20" rx="4" fill="${rw.color||'var(--pos)'}"/>`;
+    s+=T(x(rw.v)+8,y+18,fmt(rw.v),{fw:700,fill:'var(--ink)',fs:12.5});if(rw.note)s+=T(W-6,y+18,rw.note,{a:'end',fs:11});});return s+'</svg>';}
+function divBars(rows,fmt,l=180){const mx=Math.max(...rows.map(r=>Math.abs(r.v)),1e-6),W=720,rowH=30,r=60,H=rowH*rows.length+10,mid=l+(W-l-r)/2,x=v=>mid+(W-l-r)/2*0.78*v/mx;let s=SV(W,H);s+=`<line x1="${mid}" x2="${mid}" y1="0" y2="${H}" stroke="var(--muted)"/>`;
+  rows.forEach((rw,i)=>{const y=i*rowH+6,v=rw.v;s+=T(l-10,y+15,rw.label,{a:'end',fw:600,fill:'var(--ink)',fs:12.5});s+=`<rect x="${Math.min(mid,x(v))}" y="${y+3}" width="${Math.max(Math.abs(x(v)-mid),2)}" height="16" rx="3" fill="${v>=0?'var(--pos)':'var(--neg)'}"/>`;
+    s+=T(v>=0?x(v)+6:x(v)-6,y+15,fmt(v),{a:v>=0?'start':'end',fw:700,fill:'var(--ink)',fs:11.5});});return s+'</svg>';}
+function dtScatter(){
+  const D=M.dts;if(!D.length)return '';const px=D.map(d=>d.poids_debit*100),py=D.map(d=>d.ev*100);
+  const x0=Math.floor(Math.min(...px))-1,x1=Math.ceil(Math.max(...px))+1,ym=niceMax(Math.max(...py.map(Math.abs),1)),y0=-ym,y1=ym;
+  const W=720,H=330,l=60,r=150,t=20,b=50,x=v=>l+(W-l-r)*(v-x0)/(x1-x0),y=v=>t+(H-t-b)*(y1-v)/(y1-y0);let s=SV(W,H);
+  [y1,y1/2,0,y0/2,y0].forEach(g=>{s+=`<line x1="${l}" x2="${W-r}" y1="${y(g)}" y2="${y(g)}" stroke="${g===0?'var(--muted)':'var(--line)'}" ${g?'stroke-dasharray="3 4"':''}/>`+T(l-8,y(g)+4,(g>0?'+':g<0?'−':'')+nf(Math.abs(g),0)+' %',{a:'end',fs:11});});
+  for(let g=Math.ceil(x0);g<=x1;g+=Math.max(1,Math.round((x1-x0)/5)))s+=T(x(g),H-28,g+' %',{a:'middle',fs:11});
+  s+=T((l+W-r)/2,H-8,`Poids Débit encartés (${M.focus})`,{a:'middle',fs:11.5,fw:600});s+=T(l,t-6,'Évolution du recrutement vs N-1',{fs:11.5,fw:600});
+  const placed=[];D.forEach((d,i)=>{const cx=x(px[i]),cy=y(py[i]),rad=4+(d.nb_mag||8)/4,c=d.dobj==null?'var(--muted)':d.dobj<=-0.005?'var(--alert)':d.dobj<0?'var(--vig)':'var(--ok)';
+    s+=`<circle cx="${cx}" cy="${cy}" r="${rad}" fill="${c}" opacity=".85"/>`;let ly=cy+4;while(placed.some(p=>Math.abs(p[0]-cx)<110&&Math.abs(p[1]-ly)<12))ly+=13;placed.push([cx,ly]);
+    s+=T(cx+rad+4,ly,d.name,{fs:10.5,fill:'var(--ink)'});});
+  return s+'</svg>';
+}
+function miniRec(){const Wk=M.weeks;if(!Wk.length)return '';const vs=Wk.map(w=>w.v*100),mx=Math.max(...vs.map(Math.abs),1),W=260,H=96,l=6,r=56,t=10,b=18,y=v=>t+(H-t-b)*(mx-v)/(2*mx),x=i=>l+(W-l-r)*i/Math.max(vs.length-1,1),last=vs[vs.length-1],c=last<0?'var(--alert)':'var(--pos)';
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" style="width:100%;height:auto;display:block"><line x1="${l}" x2="${W-r}" y1="${y(0)}" y2="${y(0)}" stroke="var(--line)"/><polyline points="${vs.map((v,i)=>x(i)+','+y(v)).join(' ')}" fill="none" stroke="${c}" stroke-width="2.5"/><circle cx="${x(vs.length-1)}" cy="${y(last)}" r="4" fill="${c}"/><text x="${x(vs.length-1)+6}" y="${y(last)+4}" font-size="12" font-weight="700" fill="${c}">${evo(last/100)}</text><text x="${l}" y="${H-3}" font-size="10.5" fill="var(--muted)">${esc(Wk[0].name)}</text><text x="${W-r}" y="${H-3}" font-size="10.5" fill="var(--muted)" text-anchor="end">${esc(Wk[Wk.length-1].name)}</text></svg>`;}
+
+/* Registre des figures (affichées par défaut) */
+const FIGS={
+  poids:{t:'Poids des encartés par format, vs N-1 et objectif',seg:[['CA','CA'],['Débit','Débit']],def:'Débit',fn:m=>poidsChart(m),q:'poids',rg:'groupe',legend:'<span><i style="background:var(--pos)"></i>Poids N</span><span><i style="background:var(--ink);width:3px;height:14px"></i>N-1</span><span><i style="background:var(--alert);transform:rotate(45deg);width:9px;height:9px"></i>Objectif</span>'},
+  evol:{t:'Évolution vs N-1 par format, encartés et non encartés',seg:[['CA','CA'],['Débit','Débit']],def:'CA',fn:m=>evolChart(m),q:'poids',rg:'groupe',legend:'<span><i style="background:var(--pos)"></i>Encartés</span><span><i style="background:var(--muted);opacity:.45"></i>Non encartés</span>'},
+  mix:{t:'Écart de poids groupe vs N-1 : effet format et effet mix',seg:[['CA','CA'],['Débit','Débit']],def:'Débit',fn:m=>mixChart(m),q:'mix',rg:'groupe',legend:'<span><i style="background:var(--pos)"></i>Effet format : l’encartement progresse dans le format</span><span><i style="background:var(--neg)"></i>Effet mix : le format pèse plus ou moins dans le groupe</span>'},
+  wf:{t:'Cascade du CA vs N-1',seg:[['E','Encartés'],['NE','Non encartés']],def:'E',fn:m=>waterfall(m==='NE'?wfNE():wfE()),q:'eqc',rg:'eqc'},
+  seg:{t:'Évolution du CA par segment de fréquence',fn:()=>segChart(),q:'seg',rg:'segment'},
+  rec:{t:'',fn:()=>recLine(),q:'rec',rg:'recrutement'},
+  solde:{t:'Solde de foyers actifs par format',fn:()=>{const R=M.formats.map(f=>({label:f.name,v:f.solde,note:cnt(f.foyers_n1)+' → '+cnt(f.foyers)}));const mx=Math.max(...R.map(r=>Math.abs(r.v)),1);return divBars(R,v=>S(v)+cnt(Math.abs(v)));},q:'base',rg:'solde'},
+  dt:{t:'',fn:()=>dtScatter(),q:'dt',rg:'format',legend:'<span><i style="background:var(--alert);border-radius:50%;width:10px"></i>≥ 0,5 pt sous objectif</span><span><i style="background:var(--vig);border-radius:50%;width:10px"></i>Sous objectif</span><span><i style="background:var(--ok);border-radius:50%;width:10px"></i>À l’objectif ou au-dessus</span><span>Taille = nombre de magasins</span>'},
+  regions:{t:'',fn:()=>divBars([...M.regions].sort((a,b)=>a.ev-b.ev).map(r=>({label:r.name,v:r.ev})),v=>evo(v)),q:'rec',rg:'recrutement'},
+  valeur:{t:'Dépense moyenne annuelle par activation, vs référence',fn:()=>{const mx=Math.max(...M.acts.map(a=>a.depense));return hbars([...M.acts].sort((a,b)=>b.depense-a.depense).map(a=>({label:a.name,v:a.depense,note:'× '+nf(a.mult,2)+' · '+cnt(a.clients)+' clients',color:a.isRef?'var(--muted)':'var(--pos)'})),{max:mx*1.05,fmt:v=>nf(v,0)+' €'});},q:'val',rg:'valeur'},
+  mixite:{t:'Répartition des foyers par mode d’achat (12 mois)',fn:()=>hbars(M.mix.map(r=>({label:r.name,v:r.part*100,note:pts(r.d)+' · '+cnt(r.foyers)+' foyers',color:/online/i.test(r.name)?'var(--pos)':'var(--muted)'})),{max:Math.max(...M.mix.map(r=>r.part*100))*1.1,fmt:v=>nf(v,1)+' %'}),q:'val',rg:'omni'}
+};
+const figTitle=k=>FIGS[k].t||({rec:`${M.focus} · écart cumulé de recrutement vs N-1`,dt:`${M.ax} ${M.focus} · poids Débit encartés et évolution du recrutement`,regions:`Évolution du recrutement par région (${M.focus})`}[k]);
+let figN=0;
+function figHtml(key,{noRg=false}={}){const f=FIGS[key],id='f'+(++figN);
+  return `<div class="fig" data-fig="${key}" data-id="${id}"><div class="fig-h"><h3>${figTitle(key)}</h3><div class="fig-act">${f.seg?`<div class="seg">${f.seg.map(([v,l])=>`<button type="button" data-m="${v}" aria-pressed="${v===f.def}">${l}</button>`).join('')}</div>`:''}<button type="button" class="mini-link" data-q="${f.q}">${icon('spark',14)}Expliquer</button>${noRg?'':`<button type="button" class="mini-link" data-rg="${f.rg}">${icon('grid',14)}Dashboard</button>`}</div></div><div class="chart"></div>${f.legend?`<div class="legend">${f.legend}</div>`:''}</div>`;}
+function drawFigs(root,override){root.querySelectorAll('.fig').forEach(el=>{const f=FIGS[el.dataset.fig],ch=el.querySelector('.chart');const ok=override&&f.seg&&f.seg.some(s=>s[0]===override);const run=m=>{ch.innerHTML=f.fn(m);};run(ok?override:f.def);
+  if(f.seg){const sg=el.querySelector('.seg');if(ok)sg.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.m===override)));sg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{sg.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));run(b.dataset.m);}));}});}
+
+/* ===================== TEXTES GÉNÉRÉS ===================== */
+let A=null;
+function sigCard(s){const {k}=M;
+  if(s.dom==='Recrutement'){const F=A.recWorstF;return {imp:`${evo(k.ev_recrues)} de recrues vs N-1`,title:k.ev_recrues<0?`Le recrutement recule de ${evo(k.ev_recrues)}, ${F.name} en tête (${evo(F.ev_rec)})`:`Le recrutement progresse (${evo(k.ev_recrues)}) mais recule en ${F.name} (${evo(F.ev_rec)})`,
+    txt:`${A.wFirst?`En ${M.focus}, l’écart cumulé passe de ${evo(A.wFirst.v)} en ${A.wFirst.name} à ${evo(A.wLast.v)} en ${A.wLast.name}. `:''}${A.carte?`La carte physique ${A.carte.dg<0?'perd':'gagne'} ${pts(Math.abs(A.carte.dg)).replace('+','')} dans les adhésions${A.app?`, l’App ${A.app.dg>=0?'en gagne':'en perd'} ${pts(Math.abs(A.app.dg)).replace('+','')}`:''}. `:''}Régions les plus en recul : ${A.regWorst.slice(0,2).map(r=>`${r.name} (${evo(r.ev)})`).join(', ')}.`};}
+  if(s.dom==='Panier')return {imp:`${dmeur(A.artE?A.artE.v:0)} d’effet articles`,title:`Le panier des encartés recule de ${evo(k.ev_panier_e)}`,
+    txt:`Les encartés ${k.ev_freq_e>=0?'viennent plus souvent':'viennent moins souvent'} (${evo(k.ev_freq_e)}) et mettent ${k.ev_articles_e<0?'moins':'plus'} d’articles dans le panier (${evo(k.ev_articles_e)}). Le prix moyen évolue de ${evo(k.ev_prix_e)}. Le CA encarté ${verb(k.ev_ca_e)} (${evo(k.ev_ca_e)}).`};
+  if(s.dom==='Contribution'){const W=A.mixWorst;return {imp:`${pts(A.mixD,2)} d’effet mix`,title:`Le poids Débit des encartés est à ${pts(A.gapDebit)} de l’objectif`,
+    txt:`L’encartement progresse dans les formats (effet format ${pts(A.fmtD,2)}), mais la structure du trafic joue contre le programme (effet mix ${pts(A.mixD,2)}). ${W?`${W.name} pèse le plus : son Débit non encarté évolue de ${evo(W.ev_debit_ne)}, pour un poids encarté de ${pct(W.poids_debit)}.`:''}`};}
+  if(s.dom==='Rétention'){const w=A.segWorst,b=A.segBest;return {imp:`${evo(w.ev)} de CA ${w.name.toLowerCase()}`,title:`Les ${w.name.toLowerCase()} décrochent pendant que les ${b.name.toLowerCase()} ${b.ev>=0?'progressent':'reculent moins'}`,
+    txt:`${b.name} : ${evo(b.ev)} (${nf(b.poids*100,0)} % du CA). ${w.name} : ${evo(w.ev)}, avec un effet clients de ${evo(w.effet_clients)} et un effet fréquence de ${evo(w.effet_freq)}. Lecture ${M.per}.`};}
+  if(s.dom==='Base clients')return {imp:`${S(A.solde)}${cnt(Math.abs(A.solde))} foyers actifs`,title:`La base de porteurs ${A.solde<0?'diminue':'stagne'} : ${cnt(k.foyers_perdus)} foyers perdus pour ${cnt(k.foyers_gagnes)} gagnés`,
+    txt:`Le solde est de ${S(A.solde)}${cnt(Math.abs(A.solde))} foyers (${cnt(k.foyers_n)} actifs). Les perdus représentent ${dmeur(k.ca_perdus)} de CA, les gagnés ${dmeur(k.ca_gagnes)}.`};
+  const a=A.actBest;return {imp:`${a.name} × ${nf(a.mult,2)} vs ${M.ref.name}`,title:`${a.name}${A.actSecond?` et ${A.actSecond.name}`:''} sont les activations les plus rentables`,
+    txt:`Dépense moyenne annuelle : ${nf(a.depense,0)} € pour ${a.name}${A.actSecond?`, ${nf(A.actSecond.depense,0)} € pour ${A.actSecond.name}`:''}, contre ${nf(M.ref.depense,0)} € pour ${M.ref.name}.`};
+}
+function qa(key){const {k}=M;const Q={
+  poids:['Quel est le poids des encartés dans le CA et dans le trafic, et l’écart à l’objectif ?',`En ${M.label}, les encartés font <b>${pct(k.poids_ca)} du CA</b> (${pts(k.poids_ca-k.poids_ca_n1)} vs N-1${A.gapCA!=null?`, ${pts(A.gapCA)} vs objectif`:''}) et <b>${pct(k.poids_debit)} du Débit</b> (${pts(k.poids_debit-k.poids_debit_n1)} vs N-1${A.gapDebit!=null?`, <b>${pts(A.gapDebit)}</b> vs objectif`:''}). Par format : ${M.fs.map(f=>`${f.name} ${pct(f.poids_debit)}`).join(', ')}.`,'Poids CA / Débit encartés'],
+  mix:['Pourquoi le poids Débit des encartés évolue-t-il ainsi ?',`Effet format <b>${pts(A.fmtD,2)}</b>, effet mix <b>${pts(A.mixD,2)}</b>. ${A.mixWorst?`${A.mixWorst.name} a l’effet mix le plus négatif (${pts(A.mixWorst.effet_mix_debit,2)}), avec un Débit non encarté à ${evo(A.mixWorst.ev_debit_ne)}.`:''}`,'Effet format · Effet mix'],
+  eqc:['Quel levier explique l’évolution du CA des encartés vs N-1 ?',`Le CA encarté passe de ${meur(k.wf_e_n1??k.ca_e_n1)} à ${meur(k.wf_e_n1!=null?k.wf_e_n1+A.caDiff:k.ca_e)} (${dmeur(A.caDiff)}). ${M.eqcE.map(e=>`${e.name} ${dmeur(e.v)}`).join(', ')}. Premier levier : <b>${A.pos.name}</b> ; le plus pénalisant : <b>${A.neg.name}</b>.`,'Équation commerciale encartés'],
+  seg:['Quels clients portent la croissance du CA des encartés ?',`${M.perC} : ${M.segs.map(s=>`${s.name} ${evo(s.ev)} (${nf(s.poids*100,0)} % du CA)`).join(', ')}.`,'CA par segment de fréquence'],
+  rec:['Où le recrutement évolue-t-il le plus ?',`Recrutement ${M.label} : <b>${cnt(k.recrues)}</b> recrues (${evo(k.ev_recrues)}). Par format : ${M.fs.map(f=>`${f.name} ${evo(f.ev_rec)}`).join(', ')}. Magasins ${M.focus} en plus forte baisse : ${A.magRFlop.slice(0,3).map(m=>`${m.name} ${evo(m.ev)}`).join(', ')}.`,'Recrues · Évolution du recrutement'],
+  base:['La base de porteurs est-elle en croissance ?',`${cnt(k.foyers_gagnes)} foyers gagnés (${dmeur(k.ca_gagnes)}), ${cnt(k.foyers_perdus)} perdus (${dmeur(k.ca_perdus)}). Solde : <b>${S(A.solde)}${cnt(Math.abs(A.solde))}</b> (${cnt(k.foyers_n)} actifs). Dépense des constants : ${evo(ev(k.cst_depense_n,k.cst_depense_n1))}.`,'Solde d’actifs'],
+  dt:[`Quelles DT ${M.focus} sont sous l’objectif de poids Débit encartés ?`,`${A.dtUnder.length} ${M.ax} sur ${M.dts.length} sont sous l’objectif. Les plus éloignées : ${A.dtWorst.slice(0,3).map(d=>`${d.name} (${pts(d.dobj)})`).join(', ')}.`,'Poids Débit encartés par DT'],
+  val:['Quelle activation crée le plus de valeur ?',`${[...M.acts].sort((a,b)=>b.mult-a.mult).map(a=>`${a.name} ${nf(a.depense,0)} € (× ${nf(a.mult,2)})`).join(', ')}.`,'Dépense moyenne par activation']};return Q[key];}
+
+/* ===================== TALK TO MY DATA ===================== */
+const QKEYS=['poids','mix','eqc','seg','rec','base','dt','val'];
+function openTT(key,ctx){
+  $('#ttmd').hidden=false;$('#ttCtx').textContent='Contexte : '+(ctx||'Programme Club');setNav('ttmd');const body=$('#ttBody');
+  if(!key){body.innerHTML=suggHtml();bindSugg();return;}
+  const [q,a,src]=qa(key);body.innerHTML=`<div class="msg-u">${q}</div><div class="steps" id="stp"></div>`;
+  const labels=['Compréhension de la question','Requête sur les KPI certifiés','Contrôle des chiffres','Rédaction de la réponse'],reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;let i=0;
+  const draw=()=>{const st=$('#stp');if(st)st.innerHTML='<span class="eb">ANALYSE EN COURS</span>'+labels.map((l,j)=>j<i?`<span class="s2">✓ ${l}</span>`:j===i?`<span class="s1">… ${l}</span>`:`<span class="s0">○ ${l}</span>`).join('');};
+  const tick=()=>{i++;draw();if(i<labels.length)setTimeout(tick,reduce?0:340);else{const st=$('#stp');if(st)st.remove();body.insertAdjacentHTML('beforeend',`<div class="msg-a">${a}<div class="srcs">Source : ${src} · ${MODE==='real'?'dashboard régalien Programme Club (Tableau Cloud)':'données fictives de démonstration'}</div></div>`+suggHtml(key));bindSugg();}};
+  draw();setTimeout(tick,reduce?0:340);
+}
+function suggHtml(skip){return `<div class="sugg"><span class="eb">QUESTIONS SUGGÉRÉES</span>${QKEYS.filter(k=>k!==skip).slice(0,4).map(k=>`<button type="button" data-qq="${k}">${qa(k)[0]}</button>`).join('')}</div>`;}
+function bindSugg(){$('#ttBody').querySelectorAll('[data-qq]').forEach(b=>b.addEventListener('click',()=>openTT(b.dataset.qq,$('#ttCtx').textContent.replace('Contexte : ',''))));}
+
+/* ===================== MA JOURNÉE (niveau 1) ===================== */
+function renderBrief(){const {k}=M;const s0=A.signals[0];
+  const axes=[['Contribution',A.gapDebit!=null&&A.gapDebit<-0.005?'vig':'ok',A.gapDebit!=null?pts(A.gapDebit)+' vs objectif':pct(k.poids_debit),'performance'],
+    ['Croissance du CA',k.ev_ca_e>=0?'ok':'alert',evo(k.ev_ca_e)+' encartés','performance'],['Fréquence',k.ev_freq_e>=0?'ok':'vig',evo(k.ev_freq_e),'moteurs'],['Panier',k.ev_panier_e>=0?'ok':'vig',evo(k.ev_panier_e),'moteurs'],
+    ['Recrutement',k.ev_recrues<-0.02?'alert':k.ev_recrues<0||A.recWorstF.ev_rec<-0.02?'vig':'ok',evo(k.ev_recrues),'base'],['Rétention',A.solde<0?'alert':'vig',cnt(k.foyers_perdus)+' foyers perdus','base'],
+    ['Valeur & activation','opp',A.actBest?`${A.actBest.name} × ${nf(A.actBest.mult,2)}`:'','leviers'],['Omnicanalité',A.mixUp&&/online/i.test(A.mixUp.name)?'ok':'vig',A.mixUp?`${A.mixUp.name} ${pts(A.mixUp.d)}`:'','leviers']];
+  const h1=`Le CA des encartés ${verb(k.ev_ca_e)} (${evo(k.ev_ca_e)})${s0&&s0.lv>=2?`, ${({Recrutement:'mais le recrutement '+(k.ev_recrues<0?'recule':'ralentit en '+A.recWorstF.name),Panier:'mais le panier recule','Base clients':'mais la base de porteurs diminue',Contribution:'mais le poids Débit reste sous l’objectif',Rétention:'mais les clients occasionnels décrochent'})[s0.dom]}`:''}`;
+  $('#v-brief').innerHTML=`
+    <div class="greet">Bonjour Hajar · Siège · Programme Club · ${M.label}</div>
+    <div class="head-row"><div><h1 class="h1">${h1}</h1><p class="byline">Revue Programme Club — hebdomadaire · rédigée à partir des KPI certifiés du dashboard régalien${M.maj?' · données du '+M.maj:''}</p></div>
+      <div class="btns"><button type="button" class="btn">${icon('bell')}Abonné</button><button type="button" class="btn primary">${icon('share')}Exporter &amp; partager</button></div></div>
+    <div class="briefcard"><div class="eb">VOTRE BRIEF · L’ESSENTIEL EN 3 POINTS</div><div class="pts">
+      <div class="pt"><span class="k">1</span><p>Les encartés font <b>${pct(k.poids_ca,1)} du CA</b> (${pts(k.poids_ca-k.poids_ca_n1)} vs N-1). Leur CA ${verb(k.ev_ca_e)} de <b>${evo(k.ev_ca_e)}</b> quand celui des non-encartés ${verb(k.ev_ca_ne)} de ${evo(k.ev_ca_ne)}. Premier levier : <b>${A.pos.name.toLowerCase()}</b> (${dmeur(A.pos.v)}).</p></div>
+      <div class="pt"><span class="k">2</span><p>Le recrutement ${verb(k.ev_recrues)} de <b>${evo(k.ev_recrues)}</b>${A.recWorstF.ev_rec<0?`, avec le plus fort recul en <b>${A.recWorstF.name} (${evo(A.recWorstF.ev_rec)})</b>`:''}. La base compte <b>${cnt(k.foyers_n)}</b> foyers actifs (${S(A.solde)}${cnt(Math.abs(A.solde))}).</p></div>
+      <div class="pt"><span class="k">3</span><p>Le levier le plus pénalisant est <b>${A.neg.name.toLowerCase()} (${dmeur(A.neg.v)})</b>.${A.gapDebit!=null?` Le poids Débit des encartés est à <b>${pts(A.gapDebit)} de l’objectif</b>.`:''}</p></div></div>
+      <div class="minis">
+        <button type="button" class="mini" data-q="poids"><div class="l">Poids CA encartés</div><div class="v">${pct(k.poids_ca)}<small class="${k.poids_ca>=k.poids_ca_n1?'p':'n'}">${pts(k.poids_ca-k.poids_ca_n1)}</small></div></button>
+        <button type="button" class="mini" data-q="poids"><div class="l">Poids Débit</div><div class="v">${pct(k.poids_debit)}${A.gapDebit!=null?`<small class="${A.gapDebit>=0?'p':'n'}">${pts(A.gapDebit)} obj</small>`:''}</div></button>
+        <button type="button" class="mini" data-q="eqc"><div class="l">CA encartés</div><div class="v">${meur(k.ca_e)}<small class="${k.ev_ca_e>=0?'p':'n'}">${evo(k.ev_ca_e)}</small></div></button>
+        <button type="button" class="mini" data-q="eqc"><div class="l">Panier encartés</div><div class="v">${eur(k.panier_e)}<small class="${k.ev_panier_e>=0?'p':'n'}">${evo(k.ev_panier_e)}</small></div></button>
+        <button type="button" class="mini" data-q="rec"><div class="l">Recrues</div><div class="v">${cnt(k.recrues)}<small class="${k.ev_recrues>=0?'p':'n'}">${evo(k.ev_recrues)}</small></div></button></div>
+      <p class="foot">Chaque chiffre est cliquable : définition, source et explication par Talk to my Data.</p></div>
+    <div class="axes">${axes.map(d=>`<button type="button" class="dom" data-sec="${d[3]}"><b><span class="dot ${d[1]}"></span>${d[0]}</b><span>${d[2]}</span></button>`).join('')}</div>
+    <div class="cols"><div>
+      <div class="sec-h"><h2>${A.signals.length} signaux méritent votre attention</h2><p>Classés par gravité</p></div>
+      ${A.signals.map(s=>{const c=sigCard(s);return `<article class="signal"><div class="sig-top"><span class="tag ${s.t}">${s.tl}</span><span class="tag dom2">${s.dom}</span><span class="impact ${s.t==='opp'?'p':''}">${c.imp}</span></div><h3>${c.title}</h3><p>${c.txt}</p>
+        <div class="sig-act"><button type="button" class="btn dark sm" data-sec="${s.sec}">Lire l’analyse</button><button type="button" class="btn sm" data-q="${s.q}">Analyser avec TTMD</button><button type="button" class="btn ghost sm">Pas pertinent pour moi</button></div></article>`;}).join('')}
+    </div><div>
+      <div class="aside"><div class="eb">✦ TENDANCE DU RECRUTEMENT</div><p class="sub">${M.focus} · écart cumulé vs N-1</p>${miniRec()}<button type="button" class="btn sm" data-sec="base" style="margin:10px 0 12px">Lire l’analyse</button></div>
+      <div class="rg-card"><div class="eb">DASHBOARD RÉGALIEN</div><b style="font-size:15px">Programme Club</b><p>Le socle certifié : tous les KPI du programme et leurs calculs.</p>
+        <div>${[['Poids CA encartés',pct(k.poids_ca)],['Poids Débit encartés',pct(k.poids_debit)],['Foyers actifs',cnt(k.foyers_n)],['Recrues',cnt(k.recrues)]].map(x=>`<div class="kline"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('')}</div>
+        <button type="button" class="btn sm" data-rg="groupe">${icon('grid',15)}Ouvrir le dashboard</button></div>
+    </div></div>`;
+  document.querySelector('.nav[data-go="brief"] .badge').textContent=A.signals.length;
+  bindCommon($('#v-brief'),'Ma journée · Programme Club');drawFigs($('#v-brief'));
+}
+
+/* ===================== ANALYSE APPROFONDIE (niveau 2) ===================== */
+function hyps(){const {k}=M,H=[];
+  const recConf=k.ev_recrues<0||A.recWorstF.ev_rec<-0.02;
+  H.push([recConf?'c':'r',recConf?'Confirmée':'Rejetée','Le recrutement ne compense plus le renouvellement',`${evo(k.ev_recrues)} de recrues`,`Recrutement ${evo(k.ev_recrues)} (${M.fs.map(f=>`${f.name} ${evo(f.ev_rec)}`).join(', ')}). ${A.churn!=null?`${nf(A.churn*100,0)} % des foyers N-1 sont perdus sur la période ; `:''}solde de ${S(A.solde)}${cnt(Math.abs(A.solde))} foyers.`,'KPI Recrues · Solde d’actifs']);
+  if(A.carte&&A.app){const c=A.carte.dg<0&&A.app.dg>0;H.push([c?'c':'pa',c?'Confirmée':'Partielle','L’adhésion bascule de la carte physique vers le digital',`cartes ${pts(A.carte.dg)}`,`Cartes ${pct(A.carte.part_groupe,1)} (${pts(A.carte.dg)}), App ${pct(A.app.part_groupe,1)} (${pts(A.app.dg)}). En ${M.focus} : cartes ${pct(A.carte.part_focus,1)} (${pts(A.carte.df)}).`,'KPI Canal d’adhésion']);}
+  if(A.mixWorst){const c=A.mixD<0;H.push([c?'c':'r',c?'Confirmée':'Rejetée',`La structure du trafic joue contre le programme (${A.mixWorst.name})`,`${pts(A.mixD,2)} d’effet mix`,`Effet format ${pts(A.fmtD,2)}, effet mix ${pts(A.mixD,2)}. ${A.mixWorst.name} : Débit non encarté ${evo(A.mixWorst.ev_debit_ne)}, encarté ${evo(A.mixWorst.ev_debit_e)}, poids ${pct(A.mixWorst.poids_debit)}.`,'KPI Effet format · Effet mix']);}
+  {const w=A.segWorst,c=w.ev<-0.03;H.push([c?'pa':'r',c?'Partielle':'Rejetée',`Les ${w.name.toLowerCase()} se détournent`,`${evo(w.ev)}`,`Effet clients ${evo(w.effet_clients)}, effet fréquence ${evo(w.effet_freq)}. Lecture ${M.per}.`,'KPI CA par segment']);}
+  if(A.prixE&&A.artE){const c=Math.abs(A.prixE.v)>Math.abs(A.artE.v)*0.5;H.push([c?'c':'r',c?'Confirmée':'Rejetée','Un effet prix',dmeur(A.prixE.v),`Le prix moyen évolue de ${evo(k.ev_prix_e)} (${dmeur(A.prixE.v)}), contre ${dmeur(A.artE.v)} pour le nombre d’articles.`,'KPI Équation commerciale']);}
+  {const c=k.ev_ca_e<k.ev_ca_ne;H.push([c?'c':'r',c?'Confirmée':'Rejetée','Une désaffection pour le programme',`CA encartés ${evo(k.ev_ca_e)}`,`CA encartés ${evo(k.ev_ca_e)} contre ${evo(k.ev_ca_ne)} pour les non-encartés. ${A.actBest?`${A.actBest.name} : dépense ${evo(A.actBest.evd)}.`:''}`,'KPI Équation commerciale · Valeur client']);}
+  const order={c:0,pa:1,r:2};return H.sort((a,b)=>order[a[0]]-order[b[0]]);}
+function recos(){const {k}=M,R=[];
+  if(k.ev_recrues<0||A.recWorstF.ev_rec<0)R.push([`Relancer l’enrôlement en ${A.recWorstF.name}`,`Diagnostic des magasins en plus forte baisse (${A.magRFlop.slice(0,3).map(m=>m.name).join(', ')}), puis renfort de l’adhésion App en caisse.`,'Dir. Opérations · magasins','2 semaines','Recrutement au niveau N-1','Créer une alerte recrutement']);
+  const P=[...M.fs].filter(f=>f.poids_debit_obj!=null).sort((a,b)=>(a.poids_debit-a.poids_debit_obj)-(b.poids_debit-b.poids_debit_obj))[0];
+  if(P&&P.poids_debit<P.poids_debit_obj)R.push([`Encarter le trafic ${P.name}`,`Proposer systématiquement le scan de la carte ou de l’App en caisse ${P.name}.`,`Dir. ${P.name}`,'6 semaines',`Poids Débit ${P.name} vers ${pct(P.poids_debit_obj,1)}`,'Partager aux magasins']);
+  if(k.ev_panier_e<0)R.push(['Remplir le panier des encartés',`Mécaniques d’avantages à seuil et ventes croisées sur les ${A.segBig.name.toLowerCase()}. La baisse vient surtout ${Math.abs(A.artE?A.artE.v:0)>Math.abs(A.prixE?A.prixE.v:0)?'des articles':'du prix'}.`,'Marketing CRM','4 semaines','À chiffrer','Chiffrer avec TTMD']);
+  R.push([`Réactiver les ${A.segWorst.name.toLowerCase()}, pousser ${A.actBest?A.actBest.name:'les activations'}`,`Ciblage CRM des ${A.segWorst.name.toLowerCase()} avant leur départ.${A.actBest?` Proposer ${A.actBest.name} aux membres les plus actifs (× ${nf(A.actBest.mult,2)} de valeur).`:''}`,'Marketing fidélité','6 semaines','À chiffrer','Partager au CRM']);
+  return R;}
+function renderDeep(){const {k}=M,F=A.F;
+  const SECTIONS=[
+    {id:'performance',nav:'Performance',eb:'1 · Performance d’ensemble',title:k.poids_ca>=k.poids_ca_n1?'Le programme gagne du poids dans le CA':'Le programme perd du poids dans le CA',q:'poids',
+     prose:[`En ${M.label}, les encartés réalisent <b>${meur(k.ca_e)}</b> de CA, soit <b>${evo(k.ev_ca_e)}</b> vs N-1, quand les non-encartés ${verb(k.ev_ca_ne)} de ${evo(k.ev_ca_ne)}. Leur poids dans le CA atteint <b>${pct(k.poids_ca)}</b> (${pts(k.poids_ca-k.poids_ca_n1)})${A.gapCA!=null?`, à ${pts(A.gapCA)} de l’objectif`:''}.`,
+       `Côté trafic, les encartés font <b>${pct(k.poids_debit)} des passages</b> (${pts(k.poids_debit-k.poids_debit_n1)} vs N-1${A.gapDebit!=null?`, <b>${pts(A.gapDebit)} vs objectif</b>`:''}).`,
+       `Par format, le CA encarté évolue de ${M.fs.map(f=>`<b>${evo(f.ev_ca_e)}</b> en ${f.name}`).join(', ')}.`],figs:['poids','evol']},
+    {id:'moteurs',nav:'Moteurs',eb:'2 · Moteurs de la croissance',title:`Le CA encarté est porté par ${A.pos.name.toLowerCase()}`,q:'eqc',
+     prose:[`L’écart de ${dmeur(A.caDiff)} se décompose ainsi : ${M.eqcE.map(e=>`${e.name.toLowerCase()} <b>${dmeur(e.v)}</b>`).join(', ')}.`,
+       `Les encartés sont ${cnt(k.clients_e)} (${evo(k.ev_clients_e)}), viennent ${dec(k.freq_e)} fois (${evo(k.ev_freq_e)}) pour un panier de <b>${eur(k.panier_e)}</b> (${evo(k.ev_panier_e)}), ${dec(k.articles_e)} articles (${evo(k.ev_articles_e)}) à ${eur(k.prix_e)} (${evo(k.ev_prix_e)}). Chez les non-encartés, le panier évolue de ${evo(k.ev_panier_ne)}.`,
+       `Par segment (${M.per}), les <b>${A.segBest.name.toLowerCase()}</b> évoluent de <b>${evo(A.segBest.ev)}</b> et les <b>${A.segWorst.name.toLowerCase()}</b> de <b>${evo(A.segWorst.ev)}</b>.`],figs:['wf','seg']},
+    {id:'base',nav:'Base clients',eb:'3 · Santé de la base clients',title:A.solde>=0?'La base progresse, portée par le recrutement':'La base de porteurs diminue',q:'base',
+     prose:[`Sur la période, le programme gagne <b>${cnt(k.foyers_gagnes)}</b> foyers et en perd <b>${cnt(k.foyers_perdus)}</b> : solde de <b>${S(A.solde)}${cnt(Math.abs(A.solde))}</b> (${cnt(k.foyers_n)} actifs).`,
+       `Les foyers constants dépensent ${eur(k.cst_depense_n)} contre ${eur(k.cst_depense_n1)} en N-1 (${evo(ev(k.cst_depense_n,k.cst_depense_n1))}).`,
+       `Le recrutement ${verb(k.ev_recrues)} de <b>${evo(k.ev_recrues)}</b> (${cnt(k.recrues)} recrues).${A.wFirst?` En ${M.focus}, l’écart cumulé passe de ${evo(A.wFirst.v)} en ${A.wFirst.name} à <b>${evo(A.wLast.v)}</b> en ${A.wLast.name}.`:''}`],figs:['rec','solde']},
+    {id:'causes',nav:'Pourquoi',eb:'4 · Causes racines',title:'Hypothèses testées sur les KPI du programme',q:'mix',prose:['Chaque hypothèse est confirmée, partielle ou rejetée selon des règles fixes appliquées aux KPI ; aucun chiffre n’est estimé.'],hyps:hyps(),figs:['mix']},
+    {id:'ou',nav:'Où',eb:'5 · Où agir',title:`${A.dtUnder.length} ${M.ax} ${M.focus} sur ${M.dts.length} sous l’objectif`,q:'dt',
+     prose:[`En ${M.focus}, le poids Débit encarté atteint <b>${pct(F.poids_debit)}</b> (${pts(F.poids_debit-F.poids_debit_n1)} vs N-1${F.poids_debit_obj!=null?`, ${pts(F.poids_debit-F.poids_debit_obj)} vs objectif`:''}). Les ${M.ax} les plus éloignées de l’objectif : ${A.dtWorst.slice(0,3).map(d=>`<b>${d.name}</b> (${pts(d.dobj)})`).join(', ')}.`,
+       `Recrutement : ${A.dtRecWorst.name} est la maille ${M.ax} la plus en recul (${evo(A.dtRecWorst.ev)}), ${A.dtRecBest.name} la plus dynamique (${evo(A.dtRecBest.ev)}). Magasins en plus forte baisse : ${A.magRFlop.slice(0,3).map(m=>`${m.name} (${evo(m.ev)})`).join(', ')}.`],figs:['dt','regions']},
+    {id:'leviers',nav:'Leviers',eb:'6 · Leviers d’engagement',title:A.actBest?`${A.actBest.name} crée le plus de valeur`:'Leviers d’engagement',q:'val',
+     prose:[A.actBest?`${A.actBest.name} : <b>${nf(A.actBest.depense,0)} €</b> de dépense moyenne, <b>× ${nf(A.actBest.mult,2)}</b> par rapport à ${M.ref.name} (${nf(M.ref.depense,0)} €).`:'',
+       A.mixUp?`Mode d’achat : ${A.mixUp.name} ${pts(A.mixUp.d)}, ${A.mixDown.name} ${pts(A.mixDown.d)}.`:''],figs:['valeur','mixite']},
+    {id:'actions',nav:'Actions',eb:'7 · Recommandations',title:'Actions proposées, par ordre d’urgence',q:'rec',prose:['Les porteurs, horizons et cibles sont des propositions à valider avec le métier ; les impacts sont à chiffrer.'],recos:recos(),figs:[]}];
+  $('#v-deep').innerHTML=`
+    <button type="button" class="back" data-go="brief">${icon('left')} Ma journée</button>
+    <div class="crumb">Analyse approfondie · ${M.label} · encartés</div>
+    <h1 class="h1" style="max-width:none">Comprendre la performance du Programme Club</h1>
+    <p class="byline">De la performance d’ensemble aux causes racines et aux actions</p>
+    <div class="toc"><span class="l">Sommaire</span>${SECTIONS.map((s,i)=>`<button type="button" data-sec="${s.id}">${i+1}. ${s.nav}</button>`).join('')}</div>
+    ${SECTIONS.map(s=>`<section class="asec" id="s-${s.id}"><div class="asec-h"><div><div class="eb">${s.eb}</div><h2>${s.title}</h2></div><button type="button" class="ask-btn" data-q="${s.q}">${icon('spark',15)}Demander à TTMD</button></div>
+      <div class="prose">${s.prose.filter(Boolean).map(p=>`<p>${p}</p>`).join('')}</div>
+      ${s.hyps?`<div class="hyps">${s.hyps.map(h=>`<div class="hyp ${h[0]==='r'?'rej':''}"><div class="hyp-h"><span class="st ${h[0]}">${h[1]}</span><b>${h[2]}</b><span class="imp ${h[0]==='r'?'z':''}">${h[3]}</span></div><p>${h[4]}</p><span class="s">Source : ${h[5]}</span></div>`).join('')}</div>`:''}
+      ${s.recos?s.recos.map((r,j)=>`<div class="reco"><span class="k">${j+1}</span><div><b>${r[0]}</b><p>${r[1]}</p><div class="meta"><span>Porteur : <b>${r[2]}</b></span><span>Horizon : <b>${r[3]}</b></span><span>Cible : <b>${r[4]}</b></span><button type="button" class="btn sm" ${r[5]==='Chiffrer avec TTMD'?'data-q="eqc"':''}>${r[5]}</button></div></div></div>`).join(''):''}
+      ${s.figs.length?`<div class="figs">${s.figs.map(f=>figHtml(f)).join('')}</div>`:''}</section>`).join('')}
+    <div class="method"><b>Méthode et fiabilité.</b> ${M.label} vs N-1, encartés. ${MODE==='real'?'Chiffres lus dans la feuille PULSE_DATA du dashboard régalien Programme Club (Tableau Cloud), dans votre navigateur ; aucune donnée n’est envoyée ailleurs.':'<b>Mode démonstration : toutes les données de cette page sont fictives.</b>'} Les textes, signaux et hypothèses sont générés par des règles fixes à partir des KPI ; aucun chiffre n’est estimé.</div>`;
+  bindCommon($('#v-deep'),'Analyse approfondie · Programme Club');drawFigs($('#v-deep'));
+}
+
+/* ===================== DASHBOARD RÉGALIEN (structure du workbook) ===================== */
+const RG_PAGES=[['ENCARTAGE',[['groupe','Groupe'],['format','Format'],['eqc','Équation commerciale'],['segment','EQC Focus segment']]],['BASE PORTEURS',[['solde','Solde d’actifs'],['recrutement','Recrutement'],['valeur','Valeur clients']]],['OMNICANALITÉ',[['omni','Omnicanalité']]]];
+const RG_TITLES={groupe:'Encartage · vision groupe',format:'Encartage · vision format',eqc:'Équation commerciale',segment:'EQC · focus segmentation',solde:'Solde d’actifs',recrutement:'Recrutement',valeur:'Valeur clients',omni:'Omnicanalité'};
+const RG_DESC={groupe:'Poids du CA ou du Débit des encartés et évolution vs N-1, par format. Met en lumière les effets de mix entre réseaux.',format:'Poids des encartés par DT et par magasin, vs N-1 et vs objectif.',eqc:'Décompose les leviers du CA en comparant encartés et non-encartés : clients, fréquence, panier, articles, prix.',segment:'Équation commerciale des encartés par segment de fréquence.',solde:'Santé de la base : foyers gagnés, constants et perdus, et comportement des constants.',recrutement:'Nouveaux membres : tendance, canal d’adhésion, DT, régions et magasins.',valeur:'Valeur des clients par type d’activation, comparée à la référence.',omni:'Répartition des foyers par mode d’achat et transitions d’une année sur l’autre.'};
+let rgPage='groupe',rgMes='Débit';
+const tile=(l,v,d,q)=>`<button type="button" class="ktile" data-q="${q}"><span class="l">${l}</span><span class="v">${v}</span><span class="d">${d}</span></button>`;
+const tc=(r,txt)=>`<span class="${r>0?'c-up':r<0?'c-down':''}" style="${r===0?'color:var(--muted)':''}">${txt}</span>`;
+const nt=t=>`<span style="color:var(--muted)">${t}</span>`;
+const panelT=(t,body)=>`<div class="panel"><h3 style="font-size:14.5px">${t}</h3><div class="tbl">${body}</div></div>`;
+const thead=c=>`<thead><tr>${c.map((x,i)=>`<th class="${i?'r':''}">${x}</th>`).join('')}</tr></thead>`;
+function rgFilters(){if(rgPage!=='groupe')return '';return `<div class="filters"><div class="filt"><label for="fMes">Mesure</label><select id="fMes">${['CA','Débit'].map(o=>`<option ${o===rgMes?'selected':''}>${o}</option>`).join('')}</select></div><p class="note">Périmètre : ${esc(M.scope||'Encartés')} · ${esc(M.label)}. Filtres globaux en haut de page.</p></div>`;}
+function rgPageBody(){const {k}=M,mes=rgMes;
+  if(rgPage==='groupe'){const P=f=>mes==='CA'?[f.poids_ca,f.poids_ca_n1,f.poids_ca_obj]:[f.poids_debit,f.poids_debit_n1,f.poids_debit_obj];
+    return `${panelT(`Évolution du ${mes} en fonction de l’encartage · ${M.label}`,`<table class="t">${thead(['',...M.formats.map(f=>f.name)])}<tbody>
+      <tr><td><b>Total</b></td>${M.formats.map(f=>{const n=mes==='CA'?f.ca_e+f.ca_ne:f.debit_e+f.debit_ne,n1=mes==='CA'?f.ca_e_n1+f.ca_ne_n1:f.debit_e_n1+f.debit_ne_n1;return `<td class="r num">${mes==='CA'?meur(n):vol(n)} ${pill(ev(n,n1))}</td>`;}).join('')}</tr>
+      <tr><td>Encarté</td>${M.formats.map(f=>`<td class="r num">${mes==='CA'?meur(f.ca_e):vol(f.debit_e)} ${pill(mes==='CA'?f.ev_ca_e:f.ev_debit_e)}</td>`).join('')}</tr>
+      <tr><td>Non encarté</td>${M.formats.map(f=>`<td class="r num">${mes==='CA'?meur(f.ca_ne):vol(f.debit_ne)} ${pill(mes==='CA'?f.ev_ca_ne:f.ev_debit_ne)}</td>`).join('')}</tr></tbody></table>`)}
+      <div class="kgrid" style="grid-template-columns:repeat(${M.formats.length},minmax(0,1fr))">${M.formats.map(f=>{const [v,n1,o]=P(f);return tile(`Poids ${mes} encartés · ${f.name}`,pct(v),tc(v-n1,pts(v-n1)+' N-1')+(o!=null?tc(v-o,pts(v-o)+' obj'):''),'poids');}).join('')}</div>
+      <div class="panel">${figHtml('poids',{noRg:true})}</div><div class="panel">${figHtml('mix',{noRg:true})}</div>`;}
+  if(rgPage==='format'){const F=A.F;return `
+    <div class="kgrid">${tile(`Poids Débit encartés · ${F.name}`,pct(F.poids_debit),tc(F.poids_debit-F.poids_debit_n1,pts(F.poids_debit-F.poids_debit_n1)+' N-1')+(F.poids_debit_obj!=null?tc(F.poids_debit-F.poids_debit_obj,pts(F.poids_debit-F.poids_debit_obj)+' obj'):''),'dt')+tile(`Objectif ${F.name}`,F.poids_debit_obj!=null?pct(F.poids_debit_obj):'—',nt('poids Débit'),'dt')+tile(`${M.ax} sous objectif`,`${A.dtUnder.length} / ${M.dts.length}`,nt(F.name),'dt')+tile('DT la plus éloignée',A.dtWorst[0]?A.dtWorst[0].name:'—',A.dtWorst[0]?tc(A.dtWorst[0].dobj,pts(A.dtWorst[0].dobj)+' obj'):'','dt')}</div>
+    ${panelT(`Poids du Débit encartés par ${M.ax} · ${F.name}`,`<table class="t">${thead([M.ax,'Mag.','Poids','Objectif','vs N-1','vs obj'])}<tbody>${M.dts.map(d=>`<tr><td>${esc(d.name)}</td><td class="r num">${d.nb_mag??''}</td><td class="r num">${pct(d.poids_debit,1)}</td><td class="r num">${pct(d.poids_debit_obj,1)}</td><td class="r">${pill(d.dn1,'pts')}</td><td class="r">${d.dobj!=null?pill(d.dobj,'pts'):''}</td></tr>`).join('')}</tbody></table>`)}
+    <div class="panel"><div class="fig-h"><h3>Écart de poids vs N-1 par région · ${F.name}</h3></div><div class="chart">${divBars([...M.regions].sort((a,b)=>b.ecart_poids_debit-a.ecart_poids_debit).map(r=>({label:r.name,v:r.ecart_poids_debit})),v=>pts(v))}</div></div>
+    <div class="two">${panelT('Top magasins (écart vs objectif)',`<table class="t">${thead(['Magasin','Poids','vs N-1','vs obj'])}<tbody>${A.magPTop.map(m=>`<tr><td>${esc(m.name)}</td><td class="r num">${pct(m.poids_debit,1)}</td><td class="r">${pill(m.dn1,'pts')}</td><td class="r">${pill(m.dobj,'pts')}</td></tr>`).join('')}</tbody></table>`)}
+      ${panelT('Flop magasins (écart vs objectif)',`<table class="t">${thead(['Magasin','Poids','vs N-1','vs obj'])}<tbody>${A.magPFlop.map(m=>`<tr><td>${esc(m.name)}</td><td class="r num">${pct(m.poids_debit,1)}</td><td class="r">${pill(m.dn1,'pts')}</td><td class="r">${pill(m.dobj,'pts')}</td></tr>`).join('')}</tbody></table>`)}</div>`;}
+  if(rgPage==='eqc')return `<div class="two">
+      <div class="panel"><h3 style="font-size:14.5px">Encartés</h3><div class="kgrid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:4px">${tile('CA',meur(k.ca_e),tc(k.ev_ca_e,evo(k.ev_ca_e)),'eqc')+tile('Débit',vol(k.debit_e),tc(k.ev_debit_e,evo(k.ev_debit_e)),'eqc')+tile('Clients',cnt(k.clients_e),tc(k.ev_clients_e,evo(k.ev_clients_e)),'eqc')+tile('Fréquence',dec(k.freq_e),tc(k.ev_freq_e,evo(k.ev_freq_e)),'eqc')+tile('Dépense moyenne',eur(k.depense_e),tc(k.ev_depense_e,evo(k.ev_depense_e)),'eqc')+tile('Panier moyen',eur(k.panier_e),tc(k.ev_panier_e,evo(k.ev_panier_e)),'eqc')+tile('Articles / panier',dec(k.articles_e),tc(k.ev_articles_e,evo(k.ev_articles_e)),'eqc')+tile('Prix moyen',eur(k.prix_e),tc(k.ev_prix_e,evo(k.ev_prix_e)),'eqc')}</div></div>
+      <div class="panel"><h3 style="font-size:14.5px">Non encartés</h3><div class="kgrid" style="grid-template-columns:repeat(2,minmax(0,1fr));margin-top:4px">${tile('CA',meur(k.ca_ne),tc(k.ev_ca_ne,evo(k.ev_ca_ne)),'eqc')+tile('Débit',vol(k.debit_ne),tc(k.ev_debit_ne,evo(k.ev_debit_ne)),'eqc')+tile('Panier moyen',eur(k.panier_ne),tc(k.ev_panier_ne,evo(k.ev_panier_ne)),'eqc')+tile('Articles / panier',dec(k.articles_ne),tc(k.ev_articles_ne,evo(k.ev_articles_ne)),'eqc')+tile('Prix moyen',eur(k.prix_ne),tc(k.ev_prix_ne,evo(k.ev_prix_ne)),'eqc')}</div></div></div>
+    <div class="panel">${figHtml('wf',{noRg:true})}</div>`;
+  if(rgPage==='segment')return `<div class="kgrid">${tile(`CA encartés · ${M.perS}`,meur(k.seg_ca),tc(k.ev_seg_ca,evo(k.ev_seg_ca)),'seg')+tile(`Clients · ${M.perS}`,cnt(k.seg_clients),nt(M.perS),'seg')+tile('Dépense moyenne',eur(k.seg_depense),nt(M.perS),'seg')+tile('Panier moyen',eur(k.seg_panier),nt(M.perS),'seg')}</div>
+    <div class="panel">${figHtml('seg',{noRg:true})}</div>
+    ${panelT(`Équation commerciale par segment · ${M.per}`,`<table class="t">${thead(['Segment','Clients','Poids CA','Évol. CA','Effet clients','Effet fréq.','Effet panier'])}<tbody>${M.segs.map(g=>`<tr><td>${esc(g.name)}</td><td class="r num">${cnt(g.clients)}</td><td class="r num">${pct(g.poids,1)}</td><td class="r">${pill(g.ev)}</td><td class="r">${pill(g.effet_clients)}</td><td class="r">${pill(g.effet_freq)}</td><td class="r">${pill(g.effet_panier)}</td></tr>`).join('')}</tbody></table>`)}`;
+  if(rgPage==='solde'){const cs=[['CA','cst_ca',meur],['Dépense moyenne','cst_depense',eur],['Fréquence','cst_freq',dec],['Panier moyen','cst_panier',eur],['Articles / panier','cst_articles',v=>dec(v,2)],['Prix moyen','cst_prix',eur]];
+    return `<div class="kgrid">${tile('Foyers actifs',cnt(k.foyers_n),tc(A.solde,S(A.solde)+cnt(Math.abs(A.solde))+' vs N-1'),'base')+tile('Gagnés',cnt(k.foyers_gagnes),tc(1,dmeur(k.ca_gagnes)+' de CA'),'base')+tile('CA des constants',meur(k.cst_ca_n),tc(k.ca_constants,evo(ev(k.cst_ca_n,k.cst_ca_n1))+' · '+dmeur(k.ca_constants)),'base')+tile('Perdus',cnt(k.foyers_perdus),tc(-1,dmeur(k.ca_perdus)+' de CA'),'base')}</div>
+    <div class="panel">${figHtml('solde',{noRg:true})}</div>
+    <div class="panel"><div class="fig-h"><h3>Passage du CA de N-1 à N par type de foyer</h3><button type="button" class="mini-link" data-q="base">${icon('spark',14)}Expliquer</button></div><div class="chart">${waterfall(wfSolde())}</div></div>
+    ${panelT('Équation commerciale des foyers constants',`<table class="t">${thead(['KPI','N-1','N','Évol.'])}<tbody>${cs.map(([l,kk,f])=>`<tr><td>${l}</td><td class="r num">${f(k[kk+'_n1'])}</td><td class="r num">${f(k[kk+'_n'])}</td><td class="r">${pill(ev(k[kk+'_n'],k[kk+'_n1']))}</td></tr>`).join('')}</tbody></table>`)}`;}
+  if(rgPage==='recrutement')return `<div class="kgrid" style="grid-template-columns:repeat(${M.formats.length},minmax(0,1fr))">${M.formats.map(f=>tile('Recrues · '+f.name,cnt(f.recrues),tc(f.ev_rec,evo(f.ev_rec)),'rec')).join('')}</div>
+    <div class="panel">${figHtml('rec',{noRg:true})}</div>
+    <div class="two">${panelT('Canal d’adhésion',`<table class="t">${thead(['Canal','Groupe','Écart',M.focus,'Écart'])}<tbody>${M.canal.map(c=>`<tr><td>${esc(c.name)}</td><td class="r num">${pct(c.part_groupe,1)}</td><td class="r">${pill(c.dg,'pts')}</td><td class="r num">${pct(c.part_focus,1)}</td><td class="r">${pill(c.df,'pts')}</td></tr>`).join('')}</tbody></table>`)}
+      ${panelT(`Recrutement par ${M.ax} · ${M.focus}`,`<table class="t">${thead([M.ax,'Recrues','Évol.'])}<tbody>${M.dts.map(d=>`<tr><td>${esc(d.name)}</td><td class="r num">${cnt(d.recrues)}</td><td class="r">${pill(d.ev)}</td></tr>`).join('')}</tbody></table>`)}</div>
+    <div class="panel">${figHtml('regions',{noRg:true})}</div>
+    <div class="two">${panelT(`Top magasins · ${M.focus}`,`<table class="t">${thead(['Magasin','N','N-1','Évol.'])}<tbody>${A.magRTop.map(m=>`<tr><td>${esc(m.name)}</td><td class="r num">${cnt(m.recrues)}</td><td class="r num">${cnt(m.recrues_n1)}</td><td class="r">${pill(m.ev)}</td></tr>`).join('')}</tbody></table>`)}
+      ${panelT(`Flop magasins · ${M.focus}`,`<table class="t">${thead(['Magasin','N','N-1','Évol.'])}<tbody>${A.magRFlop.map(m=>`<tr><td>${esc(m.name)}</td><td class="r num">${cnt(m.recrues)}</td><td class="r num">${cnt(m.recrues_n1)}</td><td class="r">${pill(m.ev)}</td></tr>`).join('')}</tbody></table>`)}</div>`;
+  if(rgPage==='valeur')return `<div class="kgrid" style="grid-template-columns:repeat(${Math.min(M.acts.length,5)},minmax(0,1fr))">${M.acts.map(a=>tile(a.name,nf(a.depense,0)+' €',nt(cnt(a.clients)+' clients')+(a.isRef?'':tc(1,'× '+nf(a.mult,2))),'val')).join('')}</div>
+    <div class="panel">${figHtml('valeur',{noRg:true})}</div>
+    ${panelT('Valeur par type d’activation',`<table class="t">${thead(['Activation','Clients N','Clients N-1','Dépense moy.','Évol. dépense','× référence'])}<tbody>${M.acts.map(a=>`<tr><td>${esc(a.name)}${a.isRef?' <span style="color:var(--muted)">(référence)</span>':''}</td><td class="r num">${cnt(a.clients)}</td><td class="r num">${cnt(a.clients_n1)}</td><td class="r num">${nf(a.depense,0)} €</td><td class="r">${pill(a.evd)}</td><td class="r num">${nf(a.mult,2)}</td></tr>`).join('')}</tbody></table>`)}`;
+  const cols=Object.keys(M.mat);return `<div class="kgrid">${M.mix.map(r=>tile(r.name,pct(r.part,1),tc(r.d,pts(r.d)+' N-1')+nt(cnt(r.foyers)+' foyers'),'val')).join('')}</div>
+    <div class="panel">${figHtml('mixite',{noRg:true})}</div>
+    ${panelT('Matrice de passage N-1 → N (part des foyers)',`<table class="t">${thead(['En N-1 \\ En N',...cols])}<tbody>${cols.map(f=>`<tr><td><b>${esc(f)}</b></td>${cols.map(t=>`<td class="r num" style="${f===t?'font-weight:800;background:var(--accent-soft)':''}">${M.mat[f][t]!=null?pct(M.mat[f][t],1):'—'}</td>`).join('')}</tr>`).join('')}</tbody></table>`)}`;
+}
+function renderRG(){
+  $('#v-rg').innerHTML=`<div class="crumb">Dashboards régaliens</div>
+    <div class="rg-head"><div><h1 class="h1" style="max-width:none">Programme Club <span style="color:var(--muted);font-weight:500">| ${RG_TITLES[rgPage]}</span></h1><p class="byline">${MODE==='real'?'<span class="cert">✓ Certifié</span> &nbsp;Dashboard régalien Programme Club · Tableau Cloud':'<span class="cert" style="color:var(--alert);background:var(--alert-soft)">Données fictives</span> &nbsp;Mode démonstration'}${M.maj?' · données du '+M.maj:''}</p></div>
+      <div class="btns"><button type="button" class="btn" data-go="brief">${icon('sun')}Lire le brief</button><button type="button" class="btn primary" data-go="deep">${icon('trend')}Analyse approfondie</button></div></div>
+    <div class="rgwrap"><nav class="rgnav" aria-label="Pages du dashboard">${RG_PAGES.map(([g,items])=>`<div class="rgg">${g}</div>${items.map(([kk,l])=>`<button type="button" data-page="${kk}" aria-current="${kk===rgPage?'page':'false'}">${l}</button>`).join('')}`).join('')}</nav>
+      <div class="rgcontent fade"><p class="rgdesc">${RG_DESC[rgPage]}</p>${rgFilters()}${rgPageBody()}</div></div>`;
+  $('#v-rg').querySelectorAll('[data-page]').forEach(b=>b.addEventListener('click',()=>{rgPage=b.dataset.page;renderRG();}));
+  const fm=$('#fMes');if(fm)fm.addEventListener('change',e=>{rgMes=e.target.value;renderRG();});
+  bindCommon($('#v-rg'),'Dashboard régalien · '+RG_TITLES[rgPage]);drawFigs($('#v-rg'),rgMes);
+}
+
+/* ===================== NAVIGATION ===================== */
+let curView='brief';
+function setNav(v){document.querySelectorAll('.side .nav[data-go]').forEach(n=>{n.removeAttribute('aria-current');if(n.dataset.go===v)n.setAttribute('aria-current','page');});}
+function show(v,opt){curView=v;['brief','deep','rg'].forEach(x=>$('#v-'+x).hidden=x!==v);setNav(v);
+  if(v==='rg'){if(opt)rgPage=opt;renderRG();}
+  const el=$('#v-'+v);el.classList.remove('fade');void el.offsetWidth;el.classList.add('fade');
+  if(v==='deep'&&opt){const t=$('#s-'+opt);if(t){t.scrollIntoView({behavior:'smooth',block:'start'});return;}}
+  window.scrollTo({top:0,behavior:'smooth'});}
+function bindCommon(root,ctx){
+  root.querySelectorAll('[data-sec]').forEach(b=>b.addEventListener('click',()=>show('deep',b.dataset.sec)));
+  root.querySelectorAll('[data-q]').forEach(b=>b.addEventListener('click',()=>openTT(b.dataset.q,ctx)));
+  root.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go)));
+  root.querySelectorAll('[data-rg]').forEach(b=>b.addEventListener('click',()=>show('rg',b.dataset.rg)));}
+function setMode(mode,msg){MODE=mode;MODE_MSG=msg||'';const c=$('#modeChip');
+  c.className='chip '+(mode==='real'?'real':'demo');c.textContent=mode==='real'?'Données réelles · Tableau Cloud':mode==='err'?msg:'Mode démo · données fictives';
+  $('#srcChip').lastChild.textContent=mode==='real'?' Tableau Cloud · dashboard régalien Programme Club':' Données fictives de démonstration';}
+function renderAll(){figN=0;A=analyse();renderGbar();renderBrief();renderDeep();if(curView==='rg')renderRG();else if(!$('#v-rg').hidden)renderRG();$('#ttmd').hidden=true;}
+
+document.querySelectorAll('.side .nav[data-go]').forEach(n=>n.addEventListener('click',()=>{if(n.dataset.go==='ttmd')openTT(null,{brief:'Ma journée',deep:'Analyse approfondie',rg:'Dashboard régalien'}[curView]+' · Programme Club');else show(n.dataset.go);}));
+$('#ttClose').addEventListener('click',()=>{$('#ttmd').hidden=true;setNav(curView);});
+$('#ttForm').addEventListener('submit',e=>{e.preventDefault();const v=$('#ttInput').value.trim().toLowerCase();if(!v)return;
+  const map=[['recrut','rec'],['magasin','rec'],['pass','val'],['app','val'],['activation','val'],['valeur','val'],['segment','seg'],['hebdo','seg'],['irrégul','seg'],['panier','eqc'],['fréquence','eqc'],['levier','eqc'],['mix','mix'],['dt','dt'],['objectif','dt'],['foyer','base'],['perdu','base'],['base','base'],['poids','poids']];
+  const hit=map.find(([w])=>v.includes(w));$('#ttInput').value='';
+  if(hit)openTT(hit[1],$('#ttCtx').textContent.replace('Contexte : ',''));else{$('#ttBody').insertAdjacentHTML('beforeend',`<div class="msg-u">${esc(v)}</div><div class="msg-a">Dans ce prototype, je réponds aux questions de référence. Essayez une des suggestions ci-dessous.</div>`+suggHtml());bindSugg();}});
+
+/* ===================== FILTRES GLOBAUX : tout le périmètre du dashboard Programme Club =====================
+   En mode Tableau, chaque choix pilote les paramètres et filtres du dashboard, puis Pulse relit les feuilles. */
+const CTRL=[
+ {k:'tempo',l:'Temporalité',o:['Hebdo','Mensuel','CAD','CAM'],main:1},
+ {k:'per',l:'Période',o:[],main:1},
+ {k:'enc',l:'Type d’encartage',o:['Encarté','PASS'],main:1},
+ {k:'nc',l:'New Carrefour',o:['Exclu','Inclus','New Carrefour'],main:1},
+ {k:'stat',l:'Statut',o:['Total','Intégré','Franchisé'],main:1},
+ {k:'focus',l:'Format focus',o:['Hyper','Market','Proxi','E-commerce'],main:1},
+ {k:'eqc',l:'Enseigne · équation commerciale',o:['Groupe','Hyper','Market','Proxi','E-commerce']},
+ {k:'axe',l:'Axe territorial',o:['Direction Territoriale','Direction Régionale','Mode d’exploitation','Direction Opération']},
+ {k:'segm',l:'Segmentation',o:['Structurelle','Consostyle','Lifestage']},
+ {k:'bal',l:'Période solde d’actifs',o:['3 derniers mois','6 derniers mois','CAM','CAD']}];
+let FILT={tempo:'CAD',per:'',enc:'Encarté',nc:'Exclu',stat:'Total',focus:'Hyper',eqc:'Groupe',axe:'Direction Territoriale',segm:'Structurelle',bal:'3 derniers mois'};
+let PERIODS=[],gbarOpen=false,BUSY=false;
+const AXS={'Direction Territoriale':'DT','Direction Régionale':'DR','Mode d’exploitation':'Mode d’exploitation','Direction Opération':'DO'};
+const MOIS=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+const nrm=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[’']/g,"'").toLowerCase().replace(/\s+/g,' ').trim();
+const perKey=s=>{const m=/(\d{4})\D*?([SM])-?(\d+)\s*$/i.exec(String(s||''));return m?m[1]+m[2].toUpperCase()+String(+m[3]).padStart(2,'0'):null;};
+const perLab=(key,t)=>{if(!key)return '';const y=key.slice(0,4),u=key[4],n=+key.slice(5);const b=u==='M'?`${MOIS[n-1]} ${y}`:`S${n} ${y}`;return t==='CAD'?'CAD '+b:t==='CAM'?'CAM '+b:b;};
+function ctxLabels(){const p=PERIODS.find(x=>x.v===FILT.per)||PERIODS[0];const l=p?p.l:'';
+  CTXL={label:l?(FILT.tempo==='Hebdo'?'semaine '+l:FILT.tempo==='Mensuel'?'mois '+l:l):'',short:l,ax:AXS[FILT.axe]||'DT',
+    scope:[FILT.enc==='PASS'?'Clients PASS':'Encartés',{Exclu:'New Carrefour exclu',Inclus:'New Carrefour inclus','New Carrefour':'New Carrefour seul'}[FILT.nc],FILT.stat==='Total'?'tous statuts':FILT.stat].join(' · ')};}
+function renderGbar(){const el=$('#gbar');if(!el)return;const live=MODE==='real'||(MODE==='err'&&PAR);
+  const sel=c=>{const opts=c.k==='per'?(PERIODS.length?PERIODS:[{v:'',l:M.perS||'Dernière'}]):c.o.map(x=>({v:x,l:x}));
+    return `<div class="filt"><label for="g_${c.k}">${c.l}</label><select id="g_${c.k}" data-k="${c.k}" ${live&&!BUSY?'':'disabled'}>${opts.map(o=>`<option value="${esc(o.v)}"${o.v===FILT[c.k]?' selected':''}>${esc(o.l)}</option>`).join('')}</select></div>`;};
+  el.innerHTML=`<div class="filters gbar${BUSY?' busy':''}">${CTRL.filter(c=>c.main).map(sel).join('')}<button type="button" class="gmore-btn" id="gMore" aria-expanded="${gbarOpen}">${gbarOpen?'− Moins de filtres':'+ Plus de filtres'}</button>
+    ${gbarOpen?`<div class="gmore">${CTRL.filter(c=>!c.main).map(sel).join('')}</div>`:''}
+    <p class="note">${BUSY?'<b>Mise à jour…</b> Tableau recalcule le dashboard, puis Pulse relit les chiffres.':live?'Mêmes filtres que le dashboard régalien. Ils s’appliquent au brief, à l’analyse et au dashboard.':'Filtres actifs dans Tableau Cloud. Ici, les données fictives ne changent pas.'}</p></div>`;
+  el.querySelectorAll('select[data-k]').forEach(s=>s.addEventListener('change',e=>{const k=e.target.dataset.k;FILT[k]=e.target.value;if(k==='tempo')FILT.per='';refreshTableau();}));
+  $('#gMore').addEventListener('click',()=>{gbarOpen=!gbarOpen;renderGbar();});
+  const pm=document.querySelector('.side .perim');if(pm)pm.innerHTML=`<b>Votre périmètre</b>National · ${esc(M.scope||'encartés')}`;
+}
+
+/* --- pilotage des paramètres et filtres Tableau --- */
+let PAR=null;const DONE={};
+const avs=p=>((p&&p.allowableValues&&p.allowableValues.allowableValues)||[]);
+async function loadParams(){const ps=await SRC.getParametersAsync();PAR={};ps.forEach(p=>{PAR[p.name.trim()]=p;DONE[p.name.trim()]=String(p.currentValue&&p.currentValue.value);});}
+async function setPv(name,hit){const p=PAR[name];if(!p||!hit)return;if(DONE[name]===String(hit.value))return;
+  try{await p.changeValueAsync(hit.value);}catch(e){try{await p.changeValueAsync(hit.formattedValue);}catch(e2){console.warn('[Pulse] paramètre',name,e2);return;}}DONE[name]=String(hit.value);}
+const setP=(name,pred)=>setPv(name,avs(PAR[name]).find(x=>pred(nrm(x.formattedValue??x.value))));
+const setPi=(name,i)=>setPv(name,avs(PAR[name])[i]);
+const fmtRe={Groupe:/groupe/,Hyper:/hyper/,Market:/market/,Proxi:/proxi/,'E-commerce':/e-?com/};
+const TEMPO_PAR={Hebdo:/^p_semaine/i,Mensuel:/^p_mois/i,CAD:/^p_cad/i,CAM:/^p_cam/i};
+function loadPeriods(){const re=TEMPO_PAR[FILT.tempo],want=FILT.tempo==='Mensuel'?'M':'S',keys=new Set();
+  Object.keys(PAR).filter(n=>re.test(n)).forEach(n=>avs(PAR[n]).forEach(x=>{const k=perKey(x.formattedValue??x.value);if(k&&k[4]===want)keys.add(k);}));
+  PERIODS=[...keys].sort().reverse().map(k=>({v:k,l:perLab(k,FILT.tempo)}));if(!PERIODS.some(p=>p.v===FILT.per))FILT.per=PERIODS.length?PERIODS[0].v:'';}
+function initFiltFromTableau(){const cur=n=>PAR[n]?nrm(PAR[n].currentValue.formattedValue??PAR[n].currentValue.value):'';
+  const t=cur('Temporalité');FILT.tempo=/hebdo/.test(t)?'Hebdo':/mens/.test(t)?'Mensuel':/cam/.test(t)?'CAM':'CAD';
+  FILT.enc=/pass/.test(cur('p_flag_clients_detail'))?'PASS':'Encarté';
+  const fe=cur('P_enseigne');FILT.focus=Object.keys(fmtRe).find(k=>k!=='Groupe'&&fmtRe[k].test(fe))||'Hyper';
+  const fq=cur('P_enseigne EQC');FILT.eqc=Object.keys(fmtRe).find(k=>fmtRe[k].test(fq))||'Groupe';
+  const ax=cur('DT/DR/Enseigne');FILT.axe=/region/.test(ax)?'Direction Régionale':/exploit/.test(ax)?'Mode d’exploitation':/operation/.test(ax)?'Direction Opération':'Direction Territoriale';
+  const sg=cur('P segmentation');FILT.segm=CTRL.find(c=>c.k==='segm').o.find(o=>nrm(o)===sg)||'Structurelle';
+  const bl=cur('Période balance');FILT.bal=CTRL.find(c=>c.k==='bal').o.find(o=>nrm(o)===bl)||'3 derniers mois';
+  loadPeriods();}
+async function setFilter(ws,fieldRe,pred){let fs;try{fs=await ws.getFiltersAsync();}catch(e){return;}
+  const f=fs.find(x=>fieldRe.test(x.fieldName));if(!f||f.filterType&&String(f.filterType).toLowerCase()!=='categorical')return;
+  let vals=null;for(const dt of ['database','relevant']){try{const d=await f.getDomainAsync(dt);if(d&&d.values&&d.values.length){vals=d.values;break;}}catch(e){}}
+  vals=vals||f.appliedValues||[];const hit=vals.find(v=>pred(nrm(v.formattedValue??v.value)));if(!hit)return;
+  const lab=String(hit.formattedValue??hit.value),cur=(f.appliedValues||[]).map(v=>String(v.formattedValue??v.value));if(!f.isExcludeMode&&cur.length===1&&cur[0]===lab)return;
+  // Tableau attend la valeur affichée (alias) : on l'applique, puis on vérifie, sinon valeur brute
+  for(const v of [lab,String(hit.value)]){try{await ws.applyFilterAsync(f.fieldName,[v],'replace',{isExcludeMode:false});const g=(await ws.getFiltersAsync()).find(x=>x.fieldName===f.fieldName);if(!g||(g.appliedValues||[]).length)return;}catch(e){console.warn('[Pulse] filtre',f.fieldName,ws.name,e);}}}
+async function applyFilt(){const F=FILT,ti=['Hebdo','Mensuel','CAD','CAM'].indexOf(F.tempo);
+  for(const n of ['Temporalité','Temporalité 1','Temporalité segment'])await setPi(n,ti);
+  if(F.per){const re=TEMPO_PAR[F.tempo];for(const n of Object.keys(PAR).filter(n=>re.test(n)))await setPv(n,avs(PAR[n]).find(x=>perKey(x.formattedValue??x.value)===F.per));}
+  const pass=F.enc==='PASS';for(const n of ['p_flag_clients_detail','Encarte/Pass','DZV Encarté/Pass','Client Eqc'])await setP(n,v=>pass?/pass/.test(v):!/pass/.test(v));
+  const fi=['Hyper','Market','Proxi','E-commerce'].indexOf(F.focus);for(const n of ['P_enseigne','P_enseigne Recrutement'])await setP(n,v=>fmtRe[F.focus].test(v));void fi;
+  await setP('P_enseigne EQC',v=>fmtRe[F.eqc].test(v));
+  await setPi('DT/DR/Enseigne',CTRL.find(c=>c.k==='axe').o.indexOf(F.axe));
+  await setP('P segmentation',v=>v===nrm(F.segm));await setP('Période balance',v=>v===nrm(F.bal));
+  await setP('Cora',v=>F.nc==='Exclu'?/exclu/.test(v):/inclu/.test(v));
+  const byName={};SRC.worksheets.forEach(w=>{byName[w.name.trim()]=w;});
+  const ncP={Exclu:v=>/exclu/.test(v),Inclus:v=>/inclu/.test(v),'New Carrefour':v=>/new/.test(v)}[F.nc],stP=v=>v===nrm(F.stat);
+  for(const n of ALL_SHEETS){const ws=byName[n];if(!ws)continue;await setFilter(ws,/flag.?cora/i,ncP);await setFilter(ws,/statut_desc/i,stP);}
+  for(const n of ['EQC E','EQC Débit E','Waterfall EQC'])if(byName[n])await setFilter(byName[n],/^flag clients$/i,v=>v===nrm(pass?'PASS':'Encarté'));}
+async function refreshTableau(){if(!PAR||BUSY)return;BUSY=true;loadPeriods();renderGbar();
+  try{await applyFilt();ctxLabels();const rows=await readTableau();M=buildModel(rows);setMode('real');}
+  catch(e){setMode('err',(e&&e.user)||'Lecture Tableau impossible pour ce filtre');console.warn('[Pulse]',e);}
+  BUSY=false;renderAll();}
+
+/* ===================== DÉMARRAGE : démo, puis vraies données si on est dans Tableau ===================== */
+M=buildModel(demoRows());setMode('demo');renderAll();
+
+/* ===================== BRANCHEMENT TABLEAU : lecture des feuilles du dashboard Programme Club =====================
+   Les chiffres sont ceux calculés par Tableau. Rien ne quitte le navigateur. */
+const NEED={
+  groupe:['EG_ligne CA','EG_ligne_poids_ecart','Tableau evol (4)','EG_graphique_ecart G (2)'],
+  format:['EF_TCD_DTDR (4)','Top 20 Magasins (5)','Flop 20 Magasins (5)','EF_Carte (5)'],
+  eqc:['EQC E','EQC Débit E','EQC NE','Waterfall EQC','Waterfall EQC NE (2)'],
+  segment:['Solde clients (3)'],
+  solde:['Solde clients (2)','Focus clients','Focus CA','EQC balance (2)','EQC balance N1 (2)'],
+  recrutement:['Recrutement groupe','Graph_ecart_National','Recrutement Canal','TCD_DTDR','Rec_Carte','Top 20 Recru (2)','Flop 20 Magasins'],
+  valeur:['Pyramide EQC (8)'],omni:['Feuille 95','Matrice de passage']};
+const ALL_SHEETS=[...new Set(Object.values(NEED).flat())];
+const normCol=s=>String(s||'').trim().replace(/^(SOMME|SUM|AGG|ATTR|MAX|MIN|AVG|MOYENNE|CNT|COUNT)\((.*)\)$/i,'$2').replace(/\s+/g,' ').trim().toLowerCase();
+const FMT={'groupe':'Groupe','1- hyper':'Hyper','2- market':'Market','3- proxi':'Proxi','e-com':'E-commerce','4- ecom':'E-commerce','hyper':'Hyper','market':'Market','proxi':'Proxi','carrefour hyper':'Hyper','carrefour market':'Market','carrefour proxi':'Proxi','carrefour proximité':'Proxi','hyper (offline)':'Hyper','market (offline)':'Market','proxi (offline)':'Proxi','e-commerce*':'E-commerce','e-commerce':'E-commerce'};
+const fmtName=s=>FMT[String(s||'').trim().toLowerCase()]||String(s||'').trim();
+const nice=s=>String(s||'').trim().toLowerCase().replace(/(^|[\s\-'’])([a-zàâçéèêëîïôûùüÿñæœ])/g,(m,a,b)=>a+b.toUpperCase()).replace(/\b(Dtf|Dti|Dt|Dr|Idf|Ra|Paca)\b/g,x=>x.toUpperCase()).replace(/\bB\.ndie\b/i,'B.Ndie').replace(/\bH\.ndie\b/i,'H.Ndie');
+async function readWS(ws){
+  let t;if(typeof ws.getSummaryDataReaderAsync==='function'){const r=await ws.getSummaryDataReaderAsync(undefined,{ignoreSelection:true});try{t=r.pageCount>0?await r.getAllPagesAsync():{columns:r.columns||[],data:[]};}catch(e){t={columns:[],data:[]};}await r.releaseAsync();}
+  else t=await ws.getSummaryDataAsync({ignoreSelection:true,maxRows:0});
+  const cols=t.columns.map(c=>normCol(c.fieldName));
+  const rows=t.data.map(r=>r.map(c=>{const v=c==null?null:(c.nativeValue!==undefined?c.nativeValue:c.value);return v==='%null%'||v===''?null:v;}));
+  const idx=n=>cols.map((c,i)=>c===n?i:-1).filter(i=>i>=0);
+  const get=(row,...names)=>{for(const n of names)for(const i of idx(n.toLowerCase())){const v=row[i];if(v!=null&&v!=='')return v;}return null;};
+  const num=(row,...names)=>{const v=get(row,...names);if(v==null)return null;const x=typeof v==='number'?v:parseFloat(String(v).replace(/[^\d,.\-]/g,'').replace(',','.'));return isFinite(x)?x:null;};
+  return {cols,rows,get,num};
+}
+async function readTableau(){
+  const dash=SRC;
+  const byName={};dash.worksheets.forEach(w=>{byName[w.name.trim()]=w;});
+  const missing=ALL_SHEETS.filter(n=>!byName[n.trim()]);
+  if(missing.length)throw {user:`Feuilles manquantes dans le dashboard : ${missing.slice(0,4).join(', ')}${missing.length>4?` (+${missing.length-4})`:''}`};
+  const S={};const rd=async n=>{S[n]=await readWS(byName[n.trim()]);};
+  let param=null,orig=null;try{param=await dash.findParameterAsync('CA/Débit');orig=param&&param.currentValue.value;}catch(e){}
+  const R=[],a=(b,d,m,v,o)=>{if(v!=null&&isFinite(v))R.push([b,d,m,Number(v),o==null?null:o]);};
+  const order={Groupe:1,Hyper:2,Market:3,Proxi:4,'E-commerce':5};
+  // --- passe CA puis passe Débit sur les feuilles Encartage Groupe
+  for(const mes of ['CA','Débit']){
+    if(param){try{await param.changeValueAsync(mes);}catch(e){try{await param.changeValueAsync(mes==='CA'?'1':'2');}catch(e2){}}}
+    for(const n of NEED.groupe)await rd(n);
+    const L=S['EG_ligne CA'],P=S['EG_ligne_poids_ecart'],E=S['Tableau evol (4)'],G=S['EG_graphique_ecart G (2)'];
+    const key=mes==='CA'?'ca':'debit';
+    const vals={};L.rows.forEach(r=>{const fl=String(L.get(r,'flag clients')||'').toLowerCase();if(fl.includes('hors'))return;const f=fmtName(L.get(r,'enseigne')),c=fl.includes('non')?'ne':'e';const n=L.num(r,'ca/débit n'),ev=L.num(r,'evol ca/débit');const o=(vals[f+'|'+c]=vals[f+'|'+c]||{});if(n!=null)o.n=n;if(ev!=null)o.ev=ev;});
+    Object.entries(vals).forEach(([k,o])=>{const [f,c]=k.split('|');if(o.n==null)return;a('format',f,`${key}_${c}`,o.n,order[f]);if(o.ev!=null)a('format',f,`${key}_${c}_n1`,o.n/(1+o.ev),order[f]);});
+    P.rows.forEach(r=>{if(/hors|non/i.test(String(P.get(r,'flag clients')||'')))return;const f=fmtName(P.get(r,'enseigne'));const p=P.num(r,'poids ca/débit'),ob=P.num(r,'poids déduit obj');if(p!=null)a('format',f,`poids_${key}`,p,order[f]);if(ob!=null)a('format',f,`poids_${key}_obj`,ob,order[f]);});
+    const lastW={};G.rows.forEach(r=>{if(/hors|non/i.test(String(G.get(r,'flag clients')||'')))return;const f=fmtName(G.get(r,'enseigne')),w=String(G.get(r,'maille temporelle')||''),e=G.num(r,'ecart ca/débit');if(e==null)return;const wn=(/(\d{4})\D*?(\d+)\s*$/.exec(w)||[0,0,0]).slice(1).reduce((x,y)=>x*100+(+y),0);if(!lastW[f]||wn>lastW[f].wn)lastW[f]={w,e,wn};});
+    Object.entries(lastW).forEach(([f,o])=>{const p=R.find(x=>x[0]==='format'&&x[1]===f&&x[2]===`poids_${key}`);if(p)a('format',f,`poids_${key}_n1`,p[3]-o.e/100,order[f]);
+      const m=/(\d{4}).*?S-?(\d+)/.exec(o.w);if(m&&f==='Groupe'&&mes==='Débit'){a('meta','','annee',+m[1]);a('meta','','semaine',+m[2]);}});
+    E.rows.forEach(r=>{const f=fmtName(E.get(r,'enseigne (effet_encartage)','enseigne'));const ef=E.num(r,'effet format'),em=E.num(r,'effet mix');if(ef!=null)a('format',f,`effet_format_${key}`,ef,order[f]);if(em!=null)a('format',f,`effet_mix_${key}`,em,order[f]);});
+  }
+  if(param&&orig!=null){try{await param.changeValueAsync(orig);}catch(e){}}
+  for(const n of ALL_SHEETS.filter(n=>!NEED.groupe.includes(n)))await rd(n);
+  a('meta',FILT.focus||'Hyper','format_focus',1);
+  // --- Équation commerciale
+  const flat=sh=>{const o={};sh.rows.forEach(r=>sh.cols.forEach((c,i)=>{const v=r[i];if(v!=null&&typeof v==='number'&&o[c]==null)o[c]=v;}));return o;};
+  const e=flat(S['EQC E']),d=flat(S['EQC Débit E']),ne=flat(S['EQC NE']);
+  const pick=(o,base)=>o[base+' +']??o[base+' -']??o[base+'+']??o[base+'-']??o[base];
+  const kv=(m,n,evv)=>{if(n==null)return;a('kpi','',m,n);if(evv!=null)a('kpi','',m+'_n1',n/(1+evv));};
+  kv('clients_e',d['nb clients n'],pick(d,'ecart nb client'));kv('freq_e',d['freq n'],pick(d,'ecart freq'));
+  kv('depense_e',e['depense m n'],pick(e,'ecart d m'));kv('panier_e',e['panier moyen n'],pick(e,'ecart panier m'));kv('articles_e',e['article moyen n'],pick(e,'ecart article m'));kv('prix_e',e['prix moyen n'],pick(e,'ecart prix m'));
+  kv('panier_ne',ne['panier moyen n'],pick(ne,'ecart panier m'));kv('articles_ne',ne['article moyen n'],pick(ne,'ecart article m'));kv('prix_ne',ne['prix moyen n'],pick(ne,'ecart prix m'));
+  const EFF={effet_clients:'Clients',effet_freq:'Fréquence',effet_prix:'Prix',effet_article:'Articles / panier',effet_debit:'Débit'};
+  [['Waterfall EQC','eqc_e'],['Waterfall EQC NE (2)','eqc_ne']].forEach(([n,b])=>{const W=S[n];let i=0;W.rows.forEach(r=>{const nm=String(W.get(r,'name effet')||'').toLowerCase(),v=W.num(r,'valeur effet');if(v==null)return;
+    if(nm==='ca_total_n1'){a('kpi','',b==='eqc_e'?'wf_e_n1':'wf_ne_n1',v);return;}const lab=nm.includes('interaction')||nm.includes('croise')?'Effets croisés':EFF[nm]||nm;a(b,lab,'effet',v,{Clients:1,'Débit':1,'Fréquence':2,Prix:3,'Articles / panier':4,'Effets croisés':5}[lab]||9);});});
+  // --- Segments (semaine)
+  {const Sg=S['Solde clients (3)'];let o=0;Sg.rows.forEach(r=>{const s=String(Sg.get(r,'segment')||'');const ca=Sg.num(r,'ca total n'),ev=Sg.num(r,'evol ca');if(ca==null)return;
+    if(/^total/i.test(s)){a('kpi','','seg_ca',ca);if(ev!=null)a('kpi','','seg_ca_n1',ca/(1+ev));a('kpi','','seg_clients',Sg.num(r,'nb clients n'));a('kpi','','seg_depense',Sg.num(r,'depense m n'));a('kpi','','seg_panier',Sg.num(r,'panier moyen n'));return;}
+    const rank={hebdomadaires:1,'bi-mensuels':2,mensuels:3,'irréguliers':4}[s.toLowerCase()]||++o+4;const nm=nice(s);
+    a('segment',nm,'ca',ca,rank);if(ev!=null)a('segment',nm,'ca_n1',ca/(1+ev),rank);a('segment',nm,'clients',Sg.num(r,'nb clients n'),rank);a('segment',nm,'effet_clients',Sg.num(r,'effet_clients'),rank);a('segment',nm,'effet_freq',Sg.num(r,'effet_freq'),rank);a('segment',nm,'effet_panier',Sg.num(r,'effet_panier_moyen'),rank);});}
+  // --- Solde d'actifs
+  {const F=S['Solde clients (2)'];F.rows.forEach(r=>{const f=fmtName(F.get(r,'enseigne')),t=String(F.get(r,'type balance')||''),v=F.num(r,'nb foyers');if(t==='N')a('format',f,'foyers',v,order[f]);if(t==='N-1')a('format',f,'foyers_n1',v,order[f]);if(f==='Groupe'&&t==='N')a('kpi','','foyers_n',v);if(f==='Groupe'&&t==='N-1')a('kpi','','foyers_n1',v);});
+   const C=S['Focus clients'];C.rows.forEach(r=>{const t=String(C.get(r,'type balance')||'');const ix=C.cols.map((c,i)=>c==='focus clients'?i:-1).filter(i=>i>=0);const v=ix.length?r[ix[ix.length-1]]:null;if(t==='Gagnés')a('kpi','','foyers_gagnes',Math.abs(v));if(t==='Perdus')a('kpi','','foyers_perdus',Math.abs(v));});
+   const K=S['Focus CA'];K.rows.forEach(r=>{const t=String(K.get(r,'type balance')||'');const ix=K.cols.map((c,i)=>c==='focus ca'?i:-1).filter(i=>i>=0);const delta=ix.length?r[ix[ix.length-1]]:null,cum=ix.length>1?r[ix[0]]:null;
+     if(t==='N-1')a('kpi','','ca_solde_n1',delta);if(t==='Gagnés'){a('kpi','','ca_gagnes',delta);a('kpi','','ca_solde_n',cum);}if(t==='Constants')a('kpi','','ca_constants',delta);if(t==='Perdus')a('kpi','','ca_perdus',delta);});
+   const B=flat(S['EQC balance (2)']),B1=flat(S['EQC balance N1 (2)']);
+   [['ca','ca total n','ca total n1'],['depense','depense m','depense_m_n1'],['freq','freq','freq_n1'],['panier','panier moyen','panier_moyen_n1'],['articles','article moyen','article_moyen_n1'],['prix','prix moyen','prix_moyen_n1']]
+     .forEach(([k,n,n1])=>{a('kpi','','cst_'+k+'_n',B[n]);a('kpi','','cst_'+k+'_n1',B1[n1]);});}
+  // --- Recrutement
+  {const Rg=S['Recrutement groupe'],rec={};Rg.rows.forEach(r=>{const f=fmtName(Rg.get(r,'enseigne'));const o=(rec[f]=rec[f]||{});const n=Rg.num(r,'nb recrut n'),ev=Rg.num(r,'evol recrutement','ecart +','ecart -');if(n!=null)o.n=n;if(ev!=null)o.ev=ev;});
+   Object.entries(rec).forEach(([f,o])=>{if(o.n==null)return;a('format',f,'recrues',o.n,order[f]);if(o.ev!=null)a('format',f,'recrues_n1',o.n/(1+o.ev),order[f]);});
+   const Wk=S['Graph_ecart_National'];Wk.rows.forEach(r=>{const w=String(Wk.get(r,'maille temporelle')||''),v=Wk.num(r,'evol recrutement');const m=/(\d{4})\D*?([SM])-?(\d+)\s*$/i.exec(w);if(m&&v!=null)a('rec_semaine',m[2].toUpperCase()+(+m[3]),'ecart_cumule',v,+m[1]*100+(+m[3]));});
+   const Cn=S['Recrutement Canal'],cn={};Cn.rows.forEach(r=>{const c=String(Cn.get(r,'canal_adhesion')||''),f=fmtName(Cn.get(r,'enseigne'));if(!c)return;const p=Cn.num(r,'poids nb clients n'),ec=Cn.num(r,'ecart poids nb recru');const o=(cn[c+'|'+f]=cn[c+'|'+f]||{});if(p!=null)o.p=p;if(ec!=null)o.ec=ec;});
+   const corder={Application:1,'Carrefour.fr':2,Cartes:3};
+   Object.entries(cn).forEach(([k,o])=>{const [c,f]=k.split('|');if(o.p==null)return;const sfx=f==='Groupe'?'groupe':f===(FILT.focus||'Hyper')?'focus':null;if(!sfx)return;a('canal',c,'part_'+sfx,o.p,corder[c]);if(o.ec!=null)a('canal',c,'part_'+sfx+'_n1',o.p-o.ec/100,corder[c]);});
+   const Dr=S['TCD_DTDR'];Dr.rows.forEach(r=>{const n=nice(Dr.get(r,'dt/dr (copie)'));if(!n)return;a('dt',n,'recrues',Dr.num(r,'nb recrut n'));a('dt',n,'recrues_n1',Dr.num(r,'nb recrut n1'));});
+   const Rc=S['Rec_Carte'];Rc.rows.forEach(r=>{const n=String(Rc.get(r,'region')||'');if(!n||n==='NA')return;a('region',n,'recrues',Rc.num(r,'nb recrut n'));a('region',n,'recrues_n1',Rc.num(r,'nb recrut n1'));});
+   ['Top 20 Recru (2)','Flop 20 Magasins'].forEach(sn=>{const M2=S[sn];M2.rows.forEach(r=>{const n=String(M2.get(r,'location name')||'');const v=M2.num(r,'nb recrut n'),v1=M2.num(r,'nb recrut n1');if(!n||v==null||R.some(x=>x[0]==='mag_rec'&&x[1]===n&&x[2]==='recrues'))return;a('mag_rec',n,'recrues',v);a('mag_rec',n,'recrues_n1',v1);});});}
+  // --- Format focus (DT, magasins, régions)
+  {const T2=S['EF_TCD_DTDR (4)'];T2.rows.forEach(r=>{const n=nice(T2.get(r,'dt/dr (copie)'));const p=T2.num(r,'poids ca/débit dt/dr/exp');if(!n||p==null)return;const e1=T2.num(r,'ecart ca/débit'),ob=T2.num(r,'poids déduit obj');
+     a('dt',n,'poids_debit',p);if(e1!=null)a('dt',n,'poids_debit_n1',p-e1/100);if(ob!=null)a('dt',n,'poids_debit_obj',ob);a('dt',n,'nb_mag',T2.num(r,'nb_magasin','nombre de mag'));});
+   ['Top 20 Magasins (5)','Flop 20 Magasins (5)'].forEach(sn=>{const M2=S[sn];M2.rows.forEach(r=>{const n=String(M2.get(r,'locationname','location name')||'');const p=M2.num(r,'poids ca/débit'),eo=M2.num(r,'ecart ca/débit objectif'),p1=M2.num(r,'poids ca/débit n1');if(!n||p==null||eo==null||R.some(x=>x[0]==='mag_poids'&&x[1]===n))return;
+     a('mag_poids',n,'poids_debit',p);if(p1!=null)a('mag_poids',n,'poids_debit_n1',p1);a('mag_poids',n,'poids_debit_obj',p-eo/100);});});
+   const Ca=S['EF_Carte (5)'];Ca.rows.forEach(r=>{const n=String(Ca.get(r,'region')||'');const v=Ca.num(r,'fixed ecart region');if(!n||n==='NA'||v==null)return;a('region',n,'ecart_poids_debit',v/100);});}
+  // --- Valeur clients
+  {const Py=S['Pyramide EQC (8)'];const NM={'pass':'Clients Pass','membre club':'Membres Club','inscrits communauté':'Membres Communauté','inscrits avantages':'Avantages activés','app user':'Utilisateurs App'};let o=0;
+   Py.rows.forEach(r=>{const raw=String(Py.get(r,'nom segment')||'');if(!raw)return;const n=NM[raw.toLowerCase()]||raw;if(R.some(x=>x[0]==='activation'&&x[1]===n))return;o++;
+     a('activation',n,'clients',Py.num(r,'nb clients n'),o);a('activation',n,'clients_n1',Py.num(r,'nb clients n1'),o);a('activation',n,'depense',Py.num(r,'kpi formaté'),o);a('activation',n,'depense_n1',Py.num(r,'kpi n1 formaté'),o);a('activation',n,'reference',/club/i.test(n)&&/membre/i.test(n)?1:0,o);});}
+  // --- Omnicanalité
+  {const Mx=S['Feuille 95'],mo={};Mx.rows.forEach(r=>{const n=String(Mx.get(r,'flag mixite')||''),y=String(Mx.get(r,'annee')||'');const p=Mx.num(r,'poids nb foyer'),f=Mx.num(r,'nb foyer');const x=(mo[n]=mo[n]||{});if(y==='N'){x.p=p;x.f=f;}if(y==='N1')x.p1=p;});
+   const mord={'Mono format':1,'Multi Offline':2,'Multi Online':3,'Exclusif Online':4};Object.entries(mo).forEach(([n,x])=>{a('mixite',n,'part',x.p,mord[n]);a('mixite',n,'part_n1',x.p1,mord[n]);a('mixite',n,'foyers',x.f,mord[n]);});
+   const Mt=S['Matrice de passage'];Mt.rows.forEach(r=>{const f=String(Mt.get(r,'flag mixite n1')||''),t=String(Mt.get(r,'flag_mixite_n2')||''),v=Mt.num(r,'pct_transition');if(f&&t&&v!=null)a('matrice',f+'>'+t,'part',v);});}
+  return R;
+}
+/* ===================== SOURCE DES DONNÉES =====================
+   Le dashboard Pulse ne contient QUE l'extension. Pulse ouvre en arrière-plan (invisible, lecture seule)
+   les 8 pages du classeur régalien Programme Club avec la session Tableau de l'utilisateur, et lit leurs feuilles.
+   Rien n'est enregistré dans le classeur régalien ; les droits et la RLS de l'utilisateur s'appliquent. */
+const TB_HOST='https://dub01.online.tableau.com',TB_WB='/t/france/views/ProgrammeClub_17682333228960/';
+const TB_PAGES={groupe:'EncartageGroupe',format:'EncartageFormat',eqc:'EQC',segment:'FocussegmentEQC',solde:'Soldedactifs',recrutement:'Recrutement',valeur:'ValeurClients',omni:'Omnicanalit'};
+let SRC=null;
+function vizBox(){let b=document.getElementById('tbsrc');if(!b){b=document.createElement('div');b.id='tbsrc';b.setAttribute('aria-hidden','true');
+  b.style.cssText='position:fixed;left:-12000px;top:0;width:1300px;height:900px;overflow:hidden;opacity:0;pointer-events:none';document.body.appendChild(b);}return b;}
+function showLogin(){const b=vizBox();b.style.cssText='position:fixed;inset:5% 10%;z-index:200;background:#fff;border:1px solid #ccc;border-radius:12px;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)';
+  b.insertAdjacentHTML('afterbegin','<p style="font:600 14px Manrope,sans-serif;margin:12px 16px">Connecte-toi à Tableau Cloud dans ce cadre, puis recharge le dashboard Pulse.</p>');}
+async function embedSource(){
+  await import(TB_HOST+'/javascripts/api/tableau.embedding.3.latest.min.js');
+  const box=vizBox(),V={};
+  await Promise.all(Object.entries(TB_PAGES).map(([k,p])=>new Promise((ok,ko)=>{const v=document.createElement('tableau-viz');
+    v.setAttribute('src',TB_HOST+TB_WB+p);v.setAttribute('toolbar','hidden');v.setAttribute('hide-tabs','');v.setAttribute('width','1280');v.setAttribute('height','880');
+    const t=setTimeout(()=>ko({user:'Connexion au dashboard Programme Club impossible (session ou droits Tableau)',login:true}),120000);
+    v.addEventListener('firstinteractive',()=>{clearTimeout(t);V[k]=v;ok();});v.addEventListener('vizloaderror',e=>{clearTimeout(t);ko({user:'Programme Club inaccessible : vérifie tes droits sur le classeur',login:true,e});});
+    box.appendChild(v);})));
+  const sheetViz={};Object.entries(NEED).forEach(([k,list])=>list.forEach(n=>{if(!sheetViz[n.trim()])sheetViz[n.trim()]=k;}));
+  const getWS=n=>{const v=V[sheetViz[n]];return v&&v.workbook.activeSheet.worksheets.find(w=>w.name.trim()===n);};
+  const wrap=n=>({name:n,getSummaryDataReaderAsync:(...a)=>getWS(n).getSummaryDataReaderAsync(...a),getFiltersAsync:()=>getWS(n).getFiltersAsync(),applyFilterAsync:(...a)=>getWS(n).applyFilterAsync(...a)});
+  // un paramètre = le même dans les 8 sessions : on le change partout
+  const params=async()=>{const all={};for(const v of Object.values(V)){(await v.workbook.getParametersAsync()).forEach(p=>{const n=p.name.trim();(all[n]=all[n]||[]).push(p);});}
+    return Object.entries(all).map(([n,l])=>({name:n,currentValue:l[0].currentValue,allowableValues:l[0].allowableValues,changeValueAsync:v=>Promise.all(l.map(p=>p.changeValueAsync(v)))}));};
+  return {worksheets:Object.keys(sheetViz).map(wrap),getParametersAsync:params,findParameterAsync:async n=>(await params()).find(p=>p.name===n)};}
+async function connectTableau(){
+  if(!(window.tableau&&tableau.extensions)||window.self===window.top)return;
+  const TX=tableau.extensions;
+  try{
+    await TX.initializeAsync();
+    // si les feuilles sont posées dans le dashboard Pulse, on les lit directement ; sinon on ouvre le régalien en arrière-plan
+    const d=TX.dashboardContent.dashboard,names=new Set(d.worksheets.map(w=>w.name.trim()));
+    if(ALL_SHEETS.every(n=>names.has(n.trim())))SRC=d;
+    else{setMode('err','Connexion au dashboard Programme Club…');SRC=await embedSource();}
+    setMode('err','Lecture des données Tableau…');
+    await loadParams();initFiltFromTableau();renderGbar();
+    await refreshTableau();
+  }catch(e){setMode('err',(e&&e.user)||'Lecture Tableau impossible · données fictives');console.warn('[Pulse]',e);if(e&&e.login)showLogin();}
+}
+connectTableau();
+
+})();
+
+</script>
+</body>
+</html>
